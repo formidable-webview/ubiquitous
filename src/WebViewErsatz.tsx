@@ -15,6 +15,8 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
     javaScriptEnabled: true
   };
   private backend = createRef<JSDOMBackendHandle>();
+  private scrollview = createRef<ScrollView>();
+
   private renderBackend = ({ html, url }: NormalSource) => {
     const {
       javaScriptEnabled,
@@ -60,8 +62,6 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
   }
 
   reload() {
-    // injectedJavascript It only runs once, even if the page is reloaded or
-    // navigated away.
     this.backend.current?.reload();
   }
 
@@ -72,17 +72,19 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
   static extraNativeComponentConfig() {}
 
   injectJavaScript(script: string) {
-    this.backend.current?.dom.window.eval(script);
+    this.backend.current?.injectJavascript(script);
   }
 
-  requestFocus() {}
-
-  getWindow<T extends {} = {}>(): T | undefined {
-    return this.backend.current?.dom.window as any;
+  requestFocus() {
+    console.warn('WebViewErsatz: requestFocus not Implemented');
   }
 
-  getDocument<T extends {} = {}>(): T | undefined {
-    return this.backend.current?.dom.window?.document as any;
+  getWindow<W extends {} = {}>(): W | undefined {
+    return this.backend.current?.getWindow<W>();
+  }
+
+  getDocument<D extends {} = {}>(): D | undefined {
+    return this.backend.current?.getDocument<D>();
   }
 
   render() {
@@ -107,6 +109,7 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
     ) : null;
     return (
       <ScrollView
+        ref={this.scrollview}
         contentInset={contentInset}
         contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
         decelerationRate={decelerationRate}

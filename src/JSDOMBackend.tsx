@@ -72,7 +72,6 @@ function initDOM({
         window.eval(injectedJavaScriptBeforeContentLoaded);
     }
   });
-
   dom.window.addEventListener('DOMContentLoaded', () => {
     javaScriptEnabled &&
       injectedJavascript &&
@@ -104,11 +103,13 @@ function initDOM({
 }
 
 export interface JSDOMBackendHandle {
-  dom: JSDOM;
   reload(): void;
   stopLoading(): void;
   goBack(): void;
   goForward(): void;
+  injectJavascript(script: string): void;
+  getDocument<D extends {} = {}>(): D;
+  getWindow<W extends {} = {}>(): W;
 }
 
 const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
@@ -187,9 +188,18 @@ const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
         },
         stopLoading() {
           console.warn('stopLoading not implemented');
+        },
+        injectJavascript(script: string) {
+          backendState === 'loaded' && dom.window.eval(script);
+        },
+        getDocument<D extends {} = {}>(): D {
+          return dom.window?.document as any;
+        },
+        getWindow<W extends {} = {}>(): W {
+          return dom.window as any;
         }
       }),
-      [dom, loadCycleId]
+      [dom, loadCycleId, backendState]
     );
     const children =
       backendState === 'loaded' ? (

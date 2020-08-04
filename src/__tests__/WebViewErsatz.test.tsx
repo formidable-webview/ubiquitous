@@ -1,5 +1,3 @@
-/* eslint-disable dot-notation */
-
 import * as React from 'react';
 import { WebViewErsatz } from '../WebViewErsatz';
 import { render, RenderAPI, act } from '@testing-library/react-native';
