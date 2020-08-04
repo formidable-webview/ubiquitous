@@ -88,6 +88,9 @@
       "@commitlint/config-conventional"
     ]
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "release-it": {
     "git": {
       "commitMessage": "chore: release ${version}",
