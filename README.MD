@@ -1,4 +1,9 @@
-# React Native WebView Ersatz ♦♦♦
+[![npm](https://img.shields.io/npm/v/react-native-webview-ersatz)](https://www.npmjs.com/package/react-native-webview-ersatz)
+[![semver](https://img.shields.io/badge/semver-2.0.0-e10079.svg)](https://semver.org/spec/v2.0.0.html)
+[![codecov](https://img.shields.io/codecov/c/gh/jsamr/react-native-webview-ersatz)]((https://codecov.io/gh/jsamr/react-native-webview-ersatz))
+[![CI](https://github.com/jsamr/react-native-webview-ersatz/workflows/CI/badge.svg?branch=master)](https://github.com/jsamr/react-native-webview-ersatz/actions?query=branch%3Amaster+workflow%3ACI)
+
+# React Native WebView Ersatz
 
 > :warning: *This library is in early development.*
 
