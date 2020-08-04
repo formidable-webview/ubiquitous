@@ -3,7 +3,8 @@ import { WebViewErsatz } from '../WebViewErsatz';
 import { render, RenderAPI, act } from '@testing-library/react-native';
 import { DOMWindow, Document } from 'jsdom';
 import nock from 'nock';
-import { WebViewProps } from 'react-native-webview';
+import { WebViewProps, WebViewNavigation } from 'react-native-webview';
+import { createNativeEvent } from '../events';
 
 interface WaitForOptions {
   loadCycleId?: number;
@@ -159,9 +160,7 @@ describe('WebView component', () => {
         />
       )
     );
-    expect(document.getElementById('hi')['href']).toEqual(
-      'https://foo.bar/blog'
-    );
+    expect(document.getElementById('hi').href).toEqual('https://foo.bar/blog');
   });
   it('should support source with URIs', async () => {
     const resource = nockFooBar();
@@ -223,6 +222,74 @@ describe('WebView component', () => {
         });
       }
     }
+    it('should invoke handlers with appropriate url and title when handling a remote HTTP resource', async () => {
+      nock('https://foo.bar')
+        .get('/200')
+        .reply(
+          200,
+          '<!DOCTYPE html><html><head><title>Hello world</title></head><body><header></header></body></html>',
+          { 'Content-Type': 'text/html' }
+        );
+      const onLoad = jest.fn();
+      const onLoadStart = jest.fn();
+      await waitForWebViewBackend(
+        render(
+          <WebViewErsatz
+            onLoadStart={onLoadStart}
+            onLoad={onLoad}
+            source={{
+              uri: 'https://foo.bar/200'
+            }}
+          />
+        )
+      );
+      expect(onLoad).toHaveBeenCalledWith(
+        createNativeEvent<WebViewNavigation>({
+          url: 'https://foo.bar/200',
+          title: 'Hello world',
+          navigationType: 'other'
+        })
+      );
+      expect(onLoadStart).toHaveBeenCalledWith(
+        createNativeEvent<WebViewNavigation>({
+          url: 'https://foo.bar/200',
+          title: 'Hello world',
+          navigationType: 'other',
+          loading: true
+        })
+      );
+    });
+    it('should invoke handlers with appropriate url and title when handling inline HTML', async () => {
+      const onLoad = jest.fn();
+      const onLoadStart = jest.fn();
+      await waitForWebViewBackend(
+        render(
+          <WebViewErsatz
+            onLoadStart={onLoadStart}
+            onLoad={onLoad}
+            source={{
+              html:
+                '<!DOCTYPE html><html><head><title>Hello world</title></head><body><header></header></body></html>'
+            }}
+          />
+        )
+      );
+      expect(onLoad).toHaveBeenCalledWith(
+        createNativeEvent<WebViewNavigation>({
+          url: 'about:blank',
+          title: 'Hello world',
+          navigationType: 'other'
+        })
+      );
+      expect(onLoadStart).toHaveBeenCalledWith(
+        createNativeEvent<WebViewNavigation>({
+          url: 'about:blank',
+          title: 'Hello world',
+          navigationType: 'other',
+          loading: true
+        })
+      );
+    });
     it('should invoke onHttpError when a request fails', async () => {
       nock('https://foo.bar')
         .get('/500')

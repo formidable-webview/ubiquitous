@@ -78,9 +78,8 @@ event. Our manual tests found out that both scripts have access to
 
 ## Caveats
 
-- NativeSyntheticEvents types are respected, but their content is unlikely to
-  be meaningful. If you have a specific use case for supporting an attribute of
-  the `nativeEvent` attribute, we are open to suggestions.
+- NativeSyntheticEvents types are respected, but outside of `nativeEvent`
+  attribute, their content is meaningless.
 - The mounting of the DOM is performed with
   [jsdom](https://github.com/jsdom/jsdom). Thus, the assertions you can do on
   the DOM are constrained by this library capabilities. Notably:

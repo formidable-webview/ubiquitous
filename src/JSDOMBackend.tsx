@@ -50,12 +50,20 @@ function initDOM({
   javaScriptEnabled,
   userAgent
 }: InitDOMParams): JSDOM {
+  const eventBase = {
+    get url(): string {
+      return dom.window.location.href;
+    },
+    get title(): string {
+      return dom.window.document.title;
+    }
+  };
   const postMessage = (message: string) => {
     if (typeof message !== 'string') {
       throw new Error('WebView: the argument of postMessage must be a string');
     }
     typeof onMessage === 'function' &&
-      onMessage(createNativeEvent({ data: message }));
+      onMessage(createNativeEvent({ ...eventBase, data: message }));
   };
   const dom = new JSDOM(html, {
     [url ? 'url' : '']: url,
@@ -79,9 +87,11 @@ function initDOM({
   });
   dom.window.addEventListener('load', () => {
     const loadEvent = createNativeEvent<WebViewNavigation>({
+      ...eventBase,
       navigationType: 'other'
     });
     const loadProgress = createNativeEvent<WebViewNativeProgressEvent>({
+      ...eventBase,
       progress: 1
     });
     typeof onLoadProgress === 'function' && onLoadProgress(loadProgress);
@@ -91,10 +101,9 @@ function initDOM({
       onNavigationStateChange(loadEvent.nativeEvent);
   });
   const startEvent = createNativeEvent<WebViewNavigation>({
+    ...eventBase,
     loading: true,
-    title: dom.window.document.title,
-    navigationType: 'other',
-    url: url || 'about:blank'
+    navigationType: 'other'
   });
   typeof onLoadStart === 'function' && onLoadStart(startEvent);
   typeof onNavigationStateChange === 'function' &&

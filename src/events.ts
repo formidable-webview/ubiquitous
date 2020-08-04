@@ -6,6 +6,9 @@ type EventExtended<E extends WebViewNativeEvent> = Omit<
   keyof WebViewNativeEvent
 >;
 
+const dummyFalse = () => false;
+const dummyVoid = () => {};
+
 export function createNativeEvent<E extends WebViewNativeEvent>({
   ...other
 }: EventExtended<E> & Partial<WebViewNativeEvent>): NativeSyntheticEvent<E> {
@@ -15,12 +18,12 @@ export function createNativeEvent<E extends WebViewNativeEvent>({
     currentTarget: 0,
     defaultPrevented: false,
     eventPhase: 0,
-    isDefaultPrevented: () => false,
-    isPropagationStopped: () => false,
+    isDefaultPrevented: dummyFalse,
+    isPropagationStopped: dummyFalse,
     isTrusted: true,
-    persist: () => {},
-    preventDefault: () => {},
-    stopPropagation: () => {},
+    persist: dummyVoid,
+    preventDefault: dummyVoid,
+    stopPropagation: dummyVoid,
     target: 0,
     timeStamp: 0,
     type: '',
