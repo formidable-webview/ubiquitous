@@ -1,5 +1,5 @@
 {
-  "name": "react-native-webview-ersatz",
+  "name": "@formidable-webview/ersatz",
   "version": "0.10.0",
   "description": "Emulate and test WebView behaviors in node with jest and jsdom 🚀",
   "main": "lib/commonjs/index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/jsamr/react-native-webview-ersatz.git"
+    "url": "git+ssh://git@github.com/formidable-webview/ersatz.git"
   },
   "keywords": [
     "react-native",
@@ -27,9 +27,9 @@
   "author": "Jules Sam. Randolph <jules.sam.randolph@gmail.com> (https://github.com/jsamr)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jsamr/react-native-webview-ersatz/issues"
+    "url": "https://github.com/formidable-webview/ersatz/issues"
   },
-  "homepage": "https://github.com/jsamr/react-native-webview-ersatz#readme",
+  "homepage": "https://github.com/formidable-webview/ersatz#readme",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.8.4",
