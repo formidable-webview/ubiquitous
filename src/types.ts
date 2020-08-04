@@ -12,8 +12,6 @@ export type DOMHandlers = Pick<
 
 export type BackendState = 'loading' | 'loaded';
 
-type MaybeSupportedProps = 'onShouldStartLoadWithRequest';
-
 export type SupportedPropsKeys =
   | 'source'
   | 'javaScriptEnabled'
