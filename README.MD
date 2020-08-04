@@ -1,4 +1,4 @@
-# React Native WebView Emulator
+# React Native WebView Ersatz ♦♦♦
 
 > :warning: *This library is in early development.*
 
