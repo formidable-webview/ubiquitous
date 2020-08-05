@@ -1,21 +1,28 @@
 import React from 'react';
 import { WebViewProps } from 'react-native-webview';
 import { PureComponent, createRef } from 'react';
-
 import { ScrollView } from 'react-native';
-import { JSDOMBackend, JSDOMBackendHandle } from './JSDOMBackend';
+import {
+  DOMBackendHandle,
+  WindowShape,
+  DocumentShape
+} from '@formidable-webview/ersatz-core';
+import assert from 'assert';
+import { JSDOMBackend } from './JSDOMBackend';
 import { SourceLoader, NormalSource } from './SourceLoader';
 
-// startInLoadingState
-// renderError
-// javaScriptCanOpenWindowsAutomatically
-
-export class WebViewErsatz extends PureComponent<WebViewProps> {
+export class Ersatz<D extends DocumentShape, W extends WindowShape>
+  extends PureComponent<WebViewProps>
+  implements DOMBackendHandle {
   static defaultProps: Partial<WebViewProps> = {
     javaScriptEnabled: true
   };
-  private backend = createRef<JSDOMBackendHandle>();
+  private backend = createRef<DOMBackendHandle<D, W>>();
   private scrollview = createRef<ScrollView>();
+
+  private formatLog(method: string, text: string): string {
+    return `${Ersatz.name}#${method}: ${text}`;
+  }
 
   private renderBackend = ({ html, url }: NormalSource) => {
     const {
@@ -33,7 +40,7 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
     return (
       <JSDOMBackend
         javaScriptEnabled={javaScriptEnabled}
-        injectedJavascript={injectedJavaScript}
+        injectedJavaScript={injectedJavaScript}
         injectedJavaScriptBeforeContentLoaded={
           injectedJavaScriptBeforeContentLoaded
         }
@@ -54,11 +61,11 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
   };
 
   goBack() {
-    this.backend.current?.goBack();
+    console.warn(this.formatLog('goBack', 'not Implemented.'));
   }
 
   goForward() {
-    this.backend.current?.goForward();
+    console.warn(this.formatLog('goForward', 'not Implemented.'));
   }
 
   reload() {
@@ -66,25 +73,41 @@ export class WebViewErsatz extends PureComponent<WebViewProps> {
   }
 
   stopLoading() {
-    this.backend.current?.stopLoading();
+    console.warn(this.formatLog('stopLoading', 'not Implemented.'));
   }
 
   static extraNativeComponentConfig() {}
 
   injectJavaScript(script: string) {
-    this.backend.current?.injectJavascript(script);
+    this.backend.current?.injectJavaScript(script);
   }
 
   requestFocus() {
-    console.warn('WebViewErsatz: requestFocus not Implemented');
+    console.warn(this.formatLog('requestFocus', 'not Implemented.'));
   }
 
-  getWindow<W extends {} = {}>(): W | undefined {
-    return this.backend.current?.getWindow<W>();
+  getWindow() {
+    const backend = this.backend.current;
+    assert(
+      backend !== null,
+      this.formatLog(
+        'getWindow',
+        'DOMBackend is not loaded. Make sure you call this method after it has loaded.'
+      )
+    );
+    return backend!.getWindow();
   }
 
-  getDocument<D extends {} = {}>(): D | undefined {
-    return this.backend.current?.getDocument<D>();
+  getDocument() {
+    const backend = this.backend.current;
+    assert(
+      backend !== null,
+      this.formatLog(
+        'getWindow',
+        'DOMBackend is not loaded. Make sure you call this method after it has loaded.'
+      )
+    );
+    return backend!.getDocument() as D;
   }
 
   render() {

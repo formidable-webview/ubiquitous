@@ -11,36 +11,31 @@ import {
   WebViewNativeProgressEvent,
   WebViewNavigation
 } from 'react-native-webview/lib/WebViewTypes';
+import type {
+  DOMBackendHandle,
+  DOMBackendHandlers,
+  DOMBackendProps,
+  DOMBackendState
+} from '@formidable-webview/ersatz-core';
 import { createNativeEvent } from './events';
-import { DOMHandlers, BackendState } from './types';
 import { View } from 'react-native';
 import React from 'react';
 
-interface DOMBackendProps {
-  html: string;
-  url: string;
-  injectedJavascript?: string;
-  injectedJavaScriptBeforeContentLoaded?: string;
-  javaScriptEnabled?: boolean;
-  userAgent?: string;
-  domHandlers: DOMHandlers;
-}
-
-interface InitDOMParams extends DOMHandlers {
+type InitDOMParams = DOMBackendHandlers & {
   html: string;
   url?: string;
   injectedJavaScriptBeforeContentLoaded?: string;
-  injectedJavascript?: string;
+  injectedJavaScript?: string;
   javaScriptEnabled?: boolean;
   userAgent?: string;
   loadCycleId: number;
-}
+};
 
 function initDOM({
   html,
   url,
   injectedJavaScriptBeforeContentLoaded,
-  injectedJavascript,
+  injectedJavaScript,
   onMessage,
   onLoad,
   onLoadStart,
@@ -82,8 +77,8 @@ function initDOM({
   });
   dom.window.addEventListener('DOMContentLoaded', () => {
     javaScriptEnabled &&
-      injectedJavascript &&
-      dom.window.eval(injectedJavascript);
+      injectedJavaScript &&
+      dom.window.eval(injectedJavaScript);
   });
   dom.window.addEventListener('load', () => {
     const loadEvent = createNativeEvent<WebViewNavigation>({
@@ -111,22 +106,12 @@ function initDOM({
   return dom;
 }
 
-export interface JSDOMBackendHandle {
-  reload(): void;
-  stopLoading(): void;
-  goBack(): void;
-  goForward(): void;
-  injectJavascript(script: string): void;
-  getDocument<D extends {} = {}>(): D;
-  getWindow<W extends {} = {}>(): W;
-}
-
-const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
+export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
   function JSDOMBackend(
     {
       html,
       url,
-      injectedJavascript,
+      injectedJavaScript,
       javaScriptEnabled,
       injectedJavaScriptBeforeContentLoaded,
       userAgent,
@@ -141,7 +126,9 @@ const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
     }: DOMBackendProps,
     ref
   ) {
-    const [backendState, setBackendState] = useState<BackendState>('loading');
+    const [backendState, setBackendState] = useState<DOMBackendState>(
+      'loading'
+    );
     // This state variable permits imperative reloadings
     const [loadCycleId, setLoadCycleId] = useState(0);
     const onLoad = useCallback(
@@ -156,7 +143,7 @@ const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
         html,
         url,
         injectedJavaScriptBeforeContentLoaded,
-        injectedJavascript,
+        injectedJavaScript,
         javaScriptEnabled,
         userAgent,
         onMessage,
@@ -172,7 +159,7 @@ const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
       url,
       userAgent,
       injectedJavaScriptBeforeContentLoaded,
-      injectedJavascript,
+      injectedJavaScript,
       javaScriptEnabled,
       onMessage,
       onLoadStart,
@@ -198,13 +185,13 @@ const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
         stopLoading() {
           console.warn('stopLoading not implemented');
         },
-        injectJavascript(script: string) {
+        injectJavaScript(script: string) {
           backendState === 'loaded' && dom.window.eval(script);
         },
-        getDocument<D extends {} = {}>(): D {
+        getDocument() {
           return dom.window?.document as any;
         },
-        getWindow<W extends {} = {}>(): W {
+        getWindow() {
           return dom.window as any;
         }
       }),
@@ -219,5 +206,3 @@ const JSDOMBackend = forwardRef<JSDOMBackendHandle, DOMBackendProps>(
     );
   }
 );
-
-export { JSDOMBackend };

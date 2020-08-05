@@ -1,49 +1,14 @@
 import * as React from 'react';
-import { WebViewErsatz } from '../WebViewErsatz';
-import { render, RenderAPI, act } from '@testing-library/react-native';
-import { DOMWindow, Document } from 'jsdom';
+import { Ersatz } from '../Ersatz';
+import { render, act } from '@testing-library/react-native';
+import makeErsatzTesting from '@formidable-webview/ersatz-testing';
 import nock from 'nock';
 import { WebViewProps, WebViewNavigation } from 'react-native-webview';
 import { createNativeEvent } from '../events';
 
-interface WaitForOptions {
-  loadCycleId?: number;
-  loadingState?: string;
-}
-
-async function waitForWebViewBackend(
-  renderAPI: RenderAPI,
-  options: WaitForOptions = {}
-): Promise<WebViewErsatz> {
-  const { findByTestId, UNSAFE_getByType } = renderAPI;
-  const { loadCycleId = 0, loadingState = 'loaded' } = options;
-  await findByTestId(`backend-${loadingState}-${loadCycleId}`, {
-    timeout: 300
-  });
-  const { instance: webView } = UNSAFE_getByType(WebViewErsatz);
-  expect(webView).toBeTruthy();
-  return webView;
-}
-
-async function waitForWindow(
-  rapi: RenderAPI,
-  options?: WaitForOptions
-): Promise<DOMWindow> {
-  const webView = await waitForWebViewBackend(rapi, options);
-  const window = webView.getWindow();
-  expect(window).toBeTruthy();
-  return window as DOMWindow;
-}
-
-async function waitForDocument(
-  rapi: RenderAPI,
-  options?: WaitForOptions
-): Promise<Document> {
-  const webView = await waitForWebViewBackend(rapi, options);
-  const document = webView.getDocument();
-  expect(document).toBeTruthy();
-  return document as Document;
-}
+const { waitForDocument, waitForErsatz, waitForWindow } = makeErsatzTesting(
+  Ersatz
+);
 
 function nockFooBar() {
   const resource = 'https://foo.bar';
@@ -93,7 +58,7 @@ function testInjectedScriptProp<T extends keyof WebViewProps>(
         [scriptProperty]: 'window.awesomeProp = 1;'
       };
       const window = await waitForWindow(
-        render(<WebViewErsatz {...props} source={{ html: '<div></div>' }} />)
+        render(<Ersatz {...props} source={{ html: '<div></div>' }} />)
       );
       expect(window.awesomeProp).toEqual(1);
     });
@@ -103,7 +68,7 @@ function testInjectedScriptProp<T extends keyof WebViewProps>(
       };
       const window = await waitForWindow(
         render(
-          <WebViewErsatz
+          <Ersatz
             javaScriptEnabled={true}
             source={{ html: '<div></div>' }}
             {...props}
@@ -118,7 +83,7 @@ function testInjectedScriptProp<T extends keyof WebViewProps>(
       };
       const window = await waitForWindow(
         render(
-          <WebViewErsatz
+          <Ersatz
             javaScriptEnabled={true}
             source={{ html: '<div></div>' }}
             {...props}
@@ -132,18 +97,14 @@ function testInjectedScriptProp<T extends keyof WebViewProps>(
 
 describe('WebView component', () => {
   it('should expose the document object after loading', async () => {
-    await waitForDocument(
-      render(<WebViewErsatz source={{ html: '<div></div>' }} />)
-    );
+    await waitForDocument(render(<Ersatz source={{ html: '<div></div>' }} />));
   });
   it('should expose the window object after loading', async () => {
-    await waitForDocument(
-      render(<WebViewErsatz source={{ html: '<div></div>' }} />)
-    );
+    await waitForDocument(render(<Ersatz source={{ html: '<div></div>' }} />));
   });
   it('should allow queries to document API', async () => {
     const document = await waitForDocument(
-      render(<WebViewErsatz source={{ html: '<div id="hi"></div>' }} />)
+      render(<Ersatz source={{ html: '<div id="hi"></div>' }} />)
     );
     expect(document.getElementById('hi')).toBeTruthy();
   });
@@ -152,7 +113,7 @@ describe('WebView component', () => {
   it('should support baseUrl source attribute', async () => {
     const document = await waitForDocument(
       render(
-        <WebViewErsatz
+        <Ersatz
           source={{
             html: '<a id="hi" href="/blog">foo<a>',
             baseUrl: 'https://foo.bar'
@@ -166,7 +127,7 @@ describe('WebView component', () => {
     const resource = nockFooBar();
     const document = await waitForDocument(
       render(
-        <WebViewErsatz
+        <Ersatz
           source={{
             uri: resource
           }}
@@ -178,17 +139,17 @@ describe('WebView component', () => {
   describe('regarding loading cycles', () => {
     it('should create a new DOM object after reload', async () => {
       const rendererApi = render(
-        <WebViewErsatz
+        <Ersatz
           injectedJavaScript="window.awesomeProp = (window.awesomeProp||0) + 1;"
           source={{ html: '<div></div>' }}
         />
       );
-      const webView = await waitForWebViewBackend(rendererApi);
+      const webView = await waitForErsatz(rendererApi);
       const oldWindow = webView.getWindow();
       act(() => {
         webView.reload();
       });
-      await waitForWebViewBackend(rendererApi, {
+      await waitForErsatz(rendererApi, {
         loadCycleId: 1,
         loadingState: 'loaded'
       });
@@ -200,8 +161,8 @@ describe('WebView component', () => {
           const props = {
             [handlerName]: jest.fn()
           };
-          await waitForWebViewBackend(
-            render(<WebViewErsatz {...props} source={snippet.getResource()} />),
+          await waitForErsatz(
+            render(<Ersatz {...props} source={snippet.getResource()} />),
             { loadingState: 'loading' }
           );
           expect(props[handlerName]).toHaveBeenCalled();
@@ -214,8 +175,8 @@ describe('WebView component', () => {
           const props = {
             [handlerName]: jest.fn()
           };
-          await waitForWebViewBackend(
-            render(<WebViewErsatz {...props} source={snippet.getResource()} />),
+          await waitForErsatz(
+            render(<Ersatz {...props} source={snippet.getResource()} />),
             { loadingState: 'loaded' }
           );
           expect(props[handlerName]).toHaveBeenCalled();
@@ -232,9 +193,9 @@ describe('WebView component', () => {
         );
       const onLoad = jest.fn();
       const onLoadStart = jest.fn();
-      await waitForWebViewBackend(
+      await waitForErsatz(
         render(
-          <WebViewErsatz
+          <Ersatz
             onLoadStart={onLoadStart}
             onLoad={onLoad}
             source={{
@@ -262,9 +223,9 @@ describe('WebView component', () => {
     it('should invoke handlers with appropriate url and title when handling inline HTML', async () => {
       const onLoad = jest.fn();
       const onLoadStart = jest.fn();
-      await waitForWebViewBackend(
+      await waitForErsatz(
         render(
-          <WebViewErsatz
+          <Ersatz
             onLoadStart={onLoadStart}
             onLoad={onLoad}
             source={{
@@ -295,9 +256,9 @@ describe('WebView component', () => {
         .get('/500')
         .reply(500, 'Internal server error', { 'Content-Type': 'text/plain' });
       const onHttpError = jest.fn();
-      await waitForWebViewBackend(
+      await waitForErsatz(
         render(
-          <WebViewErsatz
+          <Ersatz
             onHttpError={onHttpError}
             source={{
               uri: 'https://foo.bar/500'

@@ -1,2 +1,2 @@
-export { WebViewErsatz as default } from './WebViewErsatz';
+export { Ersatz as default } from './Ersatz';
 export * from './types';
