@@ -119,7 +119,10 @@ export class Ersatz<D extends DocumentShape, W extends WindowShape>
       style,
       decelerationRate,
       contentInset,
-      contentInsetAdjustmentBehavior
+      contentInsetAdjustmentBehavior,
+      overScrollMode,
+      scrollEnabled,
+      directionalLockEnabled
     } = this.props;
     const sourceLoader = source ? (
       <SourceLoader
@@ -137,6 +140,9 @@ export class Ersatz<D extends DocumentShape, W extends WindowShape>
         contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
         decelerationRate={decelerationRate}
         contentContainerStyle={containerStyle}
+        overScrollMode={overScrollMode as any}
+        scrollEnabled={scrollEnabled}
+        directionalLockEnabled={directionalLockEnabled}
         style={style}>
         {sourceLoader}
       </ScrollView>
