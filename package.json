@@ -5,7 +5,8 @@
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "scripts": {
     "test": "npm run test:jest && npm run test:ts && npm run test:lint",
