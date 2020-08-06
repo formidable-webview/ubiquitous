@@ -1,31 +1,65 @@
 [![npm](https://img.shields.io/npm/v/@formidable-webview/ersatz)](https://www.npmjs.com/package/@formidable-webview/ersatz)
 [![semver](https://img.shields.io/badge/semver-2.0.0-e10079.svg)](https://semver.org/spec/v2.0.0.html)
-[![codecov](https://img.shields.io/codecov/c/gh/formidable-webview/ersatz)]((https://codecov.io/gh/formidable-webview/ersatz))
+[![codecov](https://img.shields.io/codecov/c/gh/formidable-webview/ersatz)](<(https://codecov.io/gh/formidable-webview/ersatz)>)
 [![CI](https://github.com/formidable-webview/ersatz/workflows/CI/badge.svg?branch=master)](https://github.com/formidable-webview/ersatz/actions?query=branch%3Amaster+workflow%3ACI)
 
 # @formidable-webview/ersatz
 
-> :warning: *This library is in early development.*
+> :warning: _This library is in early development._
 
-## What can be tested?
+## When should I use this library?
 
-- Injected Javascript and the JS to Native communication;
-- The DOM;
-- Remote sources and options ( `{ uri, body, headers, method`);
-- Inline sources and options (`{ html, baseUrl }`);
+> **The best use-case is when your application or library uses a `WebView`
+> component with injected JavaScript**. With Ersatz, you can mock the
+> `WebView`, preform assertions on the DOM, and verify that your [JS to native
+> communication](https://github.com/react-native-community/react-native-webview/blob/master/docs/Guide.md#communicating-between-js-and-native)
+> is behaving as expected. Fundamentally, you can now-on consider code injected in a
+> `WebView` as part of the codebase and tested as deemed appropriate.
 
-## What is not supported?
+## How to use?
 
-- platform-specific props
-- decoration props (`shows*`)
-- deprecated props (`url`, `html`)
-- `allow*` props
-- props related to caching, cooking and data storage (`incognito`,
-  `cacheEnabled` ...)
-- loading source from a file
-- special `onNavigationStateChange` event types such as `formsubmit`
+The easiest way to use `Ersatz` is in combination with
+[`jest`](https://www.npmjs.com/package/jest),
+[`@formidable-webview/ersatz-testing`](https://www.npmjs.com/package/@formidable-webview/ersatz-testing)
+and
+[`@testing-library/react-native`](https://www.npmjs.com/package/@testing-library/react-native).
+**[See examples here](https://github.com/formidable-webview/ersatz-testing#readme)**.
 
-## Event Handling
+## API
+
+### Basic Props
+
+All the props in common with `ScrollView` are supported.
+
+- Deprecated props are ignored.
+- Platform-specific props are ignored.
+
+Other props which can influence the DOM or the WebView and their support are
+listed bellow. If a prop is not listed, it is probably irrelevant (related to
+visual rendering) and will be ignored:
+
+| Prop                                                    | Support            | Comments                                                                                                                          |
+| ------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `source`                                                | :warning:          | Both remote URI (including body, headers and method) and inline HTML are supported. Local files are not supported.                |
+| `javaScriptEnabled`                                     | :heavy_check_mark: |                                                                                                                                   |
+| `containerStyle`                                        | :heavy_check_mark: | Mapped to ScrollView `contentContainerStyle`.                                                                                     |
+| `renderError`                                           | :heavy_check_mark: |                                                                                                                                   |
+| `renderLoading`                                         | :heavy_check_mark: |                                                                                                                                   |
+| `injectedJavaScript`                                    | :heavy_check_mark: | This code is evaluated in the DOM by jsdom. The code shouldn't be able to access scopes outside of the DOM, thanks to sandboxing. |
+| `injectedJavaScriptBeforeContentLoaded`                 | :heavy_check_mark: | Ibidem.                                                                                                                           |
+| `userAgent`                                             | :heavy_check_mark: |                                                                                                                                   |
+| `injectedJavaScriptForMainFrameOnly`                    | :warning:          | Consider the behavior of Ersatz as if this prop was forced to `true`.                                                             |
+| `injectedJavaScriptBeforeContentLoadedForMainFrameOnly` | :warning:          | Consider the behavior of Ersatz as if this prop was forced to `true`.                                                             |
+| `incognito`                                             | :warning:          | Technically, that is true because nothing is persisted between to jsdom instantiations!                                           |
+| `allowsFullscreenVideo`                                 | :warning:          | There are no visual rendering in jsdom, so this prop cannot be emulated.                                                          |
+| `cacheEnabled`                                          | :warning:          | There is no cache implemented in jsdom. You can consider value `false`.                                                           |
+| `javaScriptCanOpenWindowsAutomatically`                 | :x:                | Navigation is not (yet) supported.                                                                                                |
+| `mediaPlaybackRequiresUserAction`                       | :x:                |                                                                                                                                   |
+| `originWhitelist`                                       | :x:                |                                                                                                                                   |
+| `startInLoadingState`                                   | :x:                |                                                                                                                                   |
+| `applicationNameForUserAgent`                           | :x:                |                                                                                                                                   |
+
+### DOM Event Handlers Props
 
 To reproduce the logic behind the different event handlers, we based our
 assumptions on the doc, the original source code and manual testing in Android,
@@ -34,16 +68,18 @@ behaviors, you are welcome to open a bug report. Bellow is a list of event
 handler props with a description of our understanding of when this handler will
 be invoked.
 
-| Event Handler             | Support            | Behavior                                                                                                                                                 |
-| ------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onLoad`                  | :heavy_check_mark: | Invoked when the WebView has finished the load operation with success.                                                                                   |
-| `onLoadEnd`               | :heavy_check_mark: | Invoked when the WebView has finished the load operation, either with a success or failure                                                               |
-| `onError`                 | :heavy_check_mark: | Invoked when the WebView has finished the load operation with a failure. Failures cannot be reproduced though.                                           |
-| `onLoadStart`             | :heavy_check_mark: | Invoked when the WebView is starting to load from a source object.                                                                                       |
-| `onLoadProgress`          | :heavy_check_mark: | Invoked multiple times when the WebView is loading. Although we support this, only one event will be fired at the end with `progress: 1`.                |
-| `onHttpError`             | :heavy_check_mark: | Invoked when a HTTP request fetching the resource in `source.uri` fails. We do provide the `description` and `httpStatus` attributes of `nativeEvent`.   |
-| `onNavigationStateChange` | :warning:          | Invoked when the WebView loading starts or ends. Special events such as `formsubmit` are not handled.                                                    |
-| `onMessage`               | :heavy_check_mark: | Invoked when a script in the backend has posted a message with `window.ReactNativeWebView.postMessage`. We also provide the legacy `window.postMessage`. |
+| Event Handler                  | Support            | Behavior                                                                                                                                                   |
+| ------------------------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onLoad`                       | :heavy_check_mark: | Invoked when the WebView has finished the load operation with success.                                                                                     |
+| `onLoadEnd`                    | :heavy_check_mark: | Invoked when the WebView has finished the load operation, either with a success or failure                                                                 |
+| `onError`                      | :heavy_check_mark: | Invoked when the WebView has finished the load operation with a failure. Failures cannot be reproduced though.                                             |
+| `onLoadStart`                  | :heavy_check_mark: | Invoked when the WebView is starting to load from a source object.                                                                                         |
+| `onLoadProgress`               | :heavy_check_mark: | Invoked multiple times when the WebView is loading. Although we support this, only one event will be fired at the end with `progress: 1`.                  |
+| `onHttpError`                  | :heavy_check_mark: | Invoked when a HTTP request fetching the resource in `source.uri` fails. We do provide the `description` and `httpStatus` attributes of `nativeEvent`.     |
+| `onMessage`                    | :heavy_check_mark: | Invoked when a script in the backend has posted a message with `window.ReactNativeWebView.postMessage`. We also provide the legacy `window.postMessage`.   |
+| `onNavigationStateChange`      | :warning:          | Invoked when the WebView loading starts or ends. Special events such as `formsubmit` are not handled. Also, navigation to different URLs is not supported. |
+| `onShouldStartLoadWithRequest` | :x:                | Unsupported. We don't have navigation right now.                                                                                                           |
+| `onFileDownload`               | :x:                | Access to local filesystem is unsupported.                                                                                                                 |
 
 ### Load Cycle
 
