@@ -52,7 +52,7 @@ const sourceSnippets = [
 function testInjectedScriptProp<T extends keyof WebViewProps>(
   scriptProperty: T
 ) {
-  describe('with injectedJavascript prop', () => {
+  describe(`with ${scriptProperty} prop`, () => {
     it(`should run ${scriptProperty} when javaScriptEnabled is unset`, async () => {
       const props: any = {
         [scriptProperty]: 'window.awesomeProp = 1;'
