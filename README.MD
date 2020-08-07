@@ -7,7 +7,7 @@
 
 > :warning: _This library is in early development._
 
-## When should I use this library?
+## When Should I Use this Library?
 
 > **The best use-case is when your application or library uses a `WebView`
 > component with injected JavaScript**. With Ersatz, you can mock the
@@ -16,7 +16,7 @@
 > is behaving as expected. Fundamentally, you can now-on consider code injected in a
 > `WebView` as part of the codebase and tested as deemed appropriate.
 
-## How to use?
+## How to Use?
 
 The easiest way to use `Ersatz` is in combination with
 [`jest`](https://www.npmjs.com/package/jest),
@@ -24,6 +24,12 @@ The easiest way to use `Ersatz` is in combination with
 and
 [`@testing-library/react-native`](https://www.npmjs.com/package/@testing-library/react-native).
 **[See examples here](https://github.com/formidable-webview/ersatz-testing#readme)**.
+
+## Compatibility Table
+
+| @formidable-webview/ersatz | react-native-webview |
+| -------------------------- | -------------------- |
+| 0.10                       | ≥ 7.6.0 < 11         |
 
 ## API
 

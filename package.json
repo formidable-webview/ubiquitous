@@ -81,7 +81,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-webview": "*"
+    "react-native-webview": ">= 7.6.0 < 11"
   },
   "commitlint": {
     "extends": [
