@@ -42,7 +42,7 @@
     "@babel/runtime": "^7.8.4",
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
-    "@formidable-webview/ersatz-testing": "^0.10.1-alpha.3",
+    "@formidable-webview/ersatz-testing": "^0.10.1-alpha.4",
     "@react-native-community/bob": "^0.16.2",
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^1.1.4",
