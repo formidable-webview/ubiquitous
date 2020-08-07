@@ -1,6 +1,6 @@
 [![npm](https://img.shields.io/npm/v/@formidable-webview/ersatz)](https://www.npmjs.com/package/@formidable-webview/ersatz)
 [![semver](https://img.shields.io/badge/semver-2.0.0-e10079.svg)](https://semver.org/spec/v2.0.0.html)
-[![codecov](https://img.shields.io/codecov/c/gh/formidable-webview/ersatz)](<(https://codecov.io/gh/formidable-webview/ersatz)>)
+[![codecov](https://img.shields.io/codecov/c/gh/formidable-webview/ersatz)](https://codecov.io/gh/formidable-webview/ersatz)
 [![CI](https://github.com/formidable-webview/ersatz/workflows/CI/badge.svg?branch=master)](https://github.com/formidable-webview/ersatz/actions?query=branch%3Amaster+workflow%3ACI)
 
 # @formidable-webview/ersatz
