@@ -31,7 +31,7 @@ and
 | -------------------------- | -------------------- |
 | 0.10                       | ≥ 7.6.0 < 11         |
 
-## API
+## Emulated Features
 
 ### Basic Props
 
@@ -86,6 +86,24 @@ be invoked.
 | `onNavigationStateChange`      | :warning:          | Invoked when the WebView loading starts or ends. Special events such as `formsubmit` are not handled. Also, navigation to different URLs is not supported. |
 | `onShouldStartLoadWithRequest` | :x:                | Unsupported. We don't have navigation right now.                                                                                                           |
 | `onFileDownload`               | :x:                | Access to local filesystem is unsupported.                                                                                                                 |
+
+### Instance Methods
+
+| Method             | Support            | Behavior                                                         |
+| ------------------ | ------------------ | ---------------------------------------------------------------- |
+| `injectJavaScript` | :heavy_check_mark: | Full support.                                                    |
+| `reload`           | :heavy_check_mark: | Full support.                                                    |
+| `stopLoading`      | :warning:          | Method is present but does nothing.                              |
+| `goBack`           | :warning:          | Method is present but does nothing. Navigation is not supported. |
+| `goForward`        | :warning:          | Method is present but does nothing. Navigation is not supported. |
+| `requestFocus`     | :warning:          | Method is present but does nothing.                              |
+
+### Additional Instance Methods specifics to Ersatz
+
+| Method        | Behavior                                                                                                                                           |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getDocument` | Return the [Document](https://developer.mozilla.org/docs/Web/API/Document) instance loaded from the DOM. **Prerequisite**: the DOM must be loaded. |
+| `getWindow`   | Return the [Window](https://developer.mozilla.org/docs/Web/API/Window) instance loaded from the DOM. **Prerequisite**: the DOM must be loaded.     |
 
 ### Load Cycle
 
