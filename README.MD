@@ -11,7 +11,7 @@
 
 > **The best use-case is when your application or library uses a `WebView`
 > component with injected JavaScript**. With Ersatz, you can mock the
-> `WebView`, preform assertions on the DOM, and verify that your [JS to native
+> `WebView`, perform assertions on the DOM, and verify that your [JS to native
 > communication](https://github.com/react-native-community/react-native-webview/blob/master/docs/Guide.md#communicating-between-js-and-native)
 > is behaving as expected. Fundamentally, you can now-on consider code injected in a
 > `WebView` as part of the codebase and tested as deemed appropriate.
