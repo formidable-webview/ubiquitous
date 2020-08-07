@@ -11,9 +11,10 @@ import assert from 'assert';
 import { JSDOMBackend } from './JSDOMBackend';
 import { SourceLoader, NormalSource } from './SourceLoader';
 
-export class Ersatz<D extends DocumentShape, W extends WindowShape>
-  extends PureComponent<WebViewProps>
-  implements DOMBackendHandle {
+export class Ersatz<
+  D extends DocumentShape = DocumentShape,
+  W extends WindowShape = WindowShape
+> extends PureComponent<WebViewProps> implements DOMBackendHandle {
   static defaultProps: Partial<WebViewProps> = {
     javaScriptEnabled: true
   };
@@ -94,7 +95,8 @@ export class Ersatz<D extends DocumentShape, W extends WindowShape>
       backend !== null,
       this.formatLog(
         'getWindow',
-        'DOMBackend is not loaded. Make sure you call this method after it has loaded.'
+        'The DOM backend is not loaded. Make sure you call this method after it has loaded. ' +
+          'You sould use @formidable-webview/ersatz-testing for that purpose.'
       )
     );
     return backend!.getWindow();
@@ -105,8 +107,9 @@ export class Ersatz<D extends DocumentShape, W extends WindowShape>
     assert(
       backend !== null,
       this.formatLog(
-        'getWindow',
-        'DOMBackend is not loaded. Make sure you call this method after it has loaded.'
+        'getDocument',
+        'The DOM backend is not loaded. Make sure you call this method after it has loaded. ' +
+          'You sould use @formidable-webview/ersatz-testing for that purpose.'
       )
     );
     return backend!.getDocument() as D;

@@ -186,18 +186,13 @@ export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
       ref,
       () => ({
         dom,
-        goBack() {
-          console.warn('goBack not implemented');
-        },
-        goForward() {
-          console.warn('goForward not implemented');
-        },
+        goBack() {},
+        goForward() {},
         reload() {
           setLoadCycleId(loadCycleId + 1);
         },
-        stopLoading() {
-          console.warn('stopLoading not implemented');
-        },
+        stopLoading() {},
+        requestFocus() {},
         injectJavaScript(script: string) {
           backendState === 'loaded' && dom.window.eval(script);
         },

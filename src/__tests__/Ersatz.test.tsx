@@ -6,6 +6,7 @@ import nock from 'nock';
 import { WebViewProps, WebViewNavigation } from 'react-native-webview';
 import { createNativeEvent } from '../events';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
+import { View } from 'react-native';
 
 const { waitForDocument, waitForErsatz, waitForWindow } = makeErsatzTesting(
   Ersatz
@@ -33,22 +34,22 @@ const endHandlers: (keyof WebViewProps)[] = [
   'onNavigationStateChange',
   'onLoadProgress'
 ];
-const sourceSnippets = [
-  {
-    name: 'inline HTML',
-    getResource() {
-      return { html: '<div></div>' };
-    }
-  },
-  {
-    name: 'remote HTML resource',
-    getResource() {
-      return {
-        uri: nockFooBar()
-      };
-    }
+const inlineHTMLSnippet = {
+  name: 'inline HTML',
+  getResource() {
+    return { html: '<div></div>' };
   }
-];
+};
+const remoteResourceSnippet = {
+  name: 'remote HTML resource',
+  getResource() {
+    return {
+      uri: nockFooBar()
+    };
+  }
+};
+
+const sourceSnippets = [inlineHTMLSnippet, remoteResourceSnippet];
 
 function testInjectedScriptProp<T extends keyof WebViewProps>(
   scriptProperty: T
@@ -136,6 +137,69 @@ describe('WebView component', () => {
       )
     );
     expect(document.getElementsByTagName('header')).toHaveLength(1);
+  });
+  it('should render a source loader when a source prop is passed', async () => {
+    const renderAPI = render(<Ersatz source={{ html: '<div></div>' }} />);
+    await renderAPI.findByTestId('ersatz-source-loader', {
+      timeout: 10
+    });
+    await waitForErsatz(renderAPI);
+  });
+  it('should render nothing when no source prop is passed', async () => {
+    const { UNSAFE_getByType, queryByTestId } = render(<Ersatz />);
+    UNSAFE_getByType(Ersatz);
+    expect(queryByTestId('ersatz-source-loader')).toBeFalsy();
+  });
+  describe('regarding instance methods', () => {
+    it('should do nothing when goBack is invoked', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const ersatz = await waitForErsatz(
+        render(<Ersatz source={{ html: '<div></div>' }} />)
+      );
+      expect(() => ersatz.goBack()).not.toThrow();
+    });
+    it('should do nothing when goForward is invoked', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const ersatz = await waitForErsatz(
+        render(<Ersatz source={{ html: '<div></div>' }} />)
+      );
+      expect(() => ersatz.goForward()).not.toThrow();
+    });
+    it('should do nothing when requestFocus is invoked', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const ersatz = await waitForErsatz(
+        render(<Ersatz source={{ html: '<div></div>' }} />)
+      );
+      expect(() => ersatz.requestFocus()).not.toThrow();
+    });
+    it('should do nothing when stopLoading is invoked', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const ersatz = await waitForErsatz(
+        render(<Ersatz source={{ html: '<div></div>' }} />)
+      );
+      expect(() => ersatz.stopLoading()).not.toThrow();
+    });
+    it('should execute javascript in the DOM when injectJavascript is invoked', async () => {
+      const ersatz = await waitForErsatz(
+        render(<Ersatz source={{ html: '<div></div>' }} />)
+      );
+      ersatz.injectJavaScript('window.awesomeProp = 1;');
+      expect(ersatz.getWindow().awesomeProp).toEqual(1);
+    });
+  });
+  describe('regarding renderer props', () => {
+    it('should use renderLoading when loading', async () => {
+      const renderLoading = () => <View testID="custom-loading" />;
+      const renderAPI = render(
+        <Ersatz
+          renderLoading={renderLoading}
+          source={remoteResourceSnippet.getResource()}
+        />
+      );
+      const { queryByTestId } = renderAPI;
+      expect(queryByTestId('custom-loading')).toBeTruthy();
+      await waitForErsatz(renderAPI);
+    });
   });
   describe('regarding Native to JS communication', () => {
     it('should invoke onMessage handler when window.ReactNativeWebview.postMessage is invoked in the DOM with a text argument', async () => {

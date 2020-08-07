@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState, ReactElement } from 'react';
 import fetch from 'node-fetch';
 import {
@@ -6,6 +7,7 @@ import {
   WebViewHttpErrorEvent
 } from 'react-native-webview/lib/WebViewTypes';
 import { createNativeEvent } from './events';
+import { View } from 'react-native';
 
 export interface SourceLoaderProps {
   source: WebViewSource;
@@ -46,11 +48,6 @@ export function SourceLoader({
           headers: headers as any
         });
         if (response.ok) {
-          if (response.headers.get('Content-Type') !== 'text/html') {
-            throw new Error(
-              "The HTTP resource hasn't text/html content type header. It is likely unprocessable."
-            );
-          }
           return response.text() as Promise<string>;
         } else {
           const description = await response.text();
@@ -75,8 +72,10 @@ export function SourceLoader({
       isSubscribed = false;
     };
   }, [source, cancelled, onHttpError]);
-  if (normalizedSource) {
-    return children(normalizedSource);
-  }
-  return typeof renderLoading === 'function' ? renderLoading() : null;
+  const content = normalizedSource
+    ? children(normalizedSource)
+    : typeof renderLoading === 'function'
+    ? renderLoading()
+    : null;
+  return <View testID="ersatz-source-loader">{content}</View>;
 }
