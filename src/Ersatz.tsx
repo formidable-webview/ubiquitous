@@ -35,7 +35,8 @@ export class Ersatz<D extends DocumentShape, W extends WindowShape>
       onLoad,
       onLoadEnd,
       onLoadProgress,
-      onNavigationStateChange
+      onNavigationStateChange,
+      onError
     } = this.props;
     return (
       <JSDOMBackend
@@ -54,7 +55,8 @@ export class Ersatz<D extends DocumentShape, W extends WindowShape>
           onLoad,
           onLoadEnd,
           onLoadProgress,
-          onNavigationStateChange
+          onNavigationStateChange,
+          onError
         }}
       />
     );

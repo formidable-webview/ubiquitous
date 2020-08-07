@@ -9,7 +9,8 @@ import { JSDOM } from 'jsdom';
 import {
   WebViewNavigationEvent,
   WebViewNativeProgressEvent,
-  WebViewNavigation
+  WebViewNavigation,
+  WebViewError
 } from 'react-native-webview/lib/WebViewTypes';
 import type {
   DOMBackendHandle,
@@ -41,6 +42,7 @@ function initDOM({
   onLoadStart,
   onLoadProgress,
   onLoadEnd,
+  onError,
   onNavigationStateChange,
   javaScriptEnabled,
   userAgent
@@ -55,7 +57,15 @@ function initDOM({
   };
   const postMessage = (message: string) => {
     if (typeof message !== 'string') {
-      throw new Error('WebView: the argument of postMessage must be a string');
+      typeof onError === 'function' &&
+        onError(
+          createNativeEvent<WebViewError>({
+            ...eventBase,
+            description:
+              'WebView: the argument of postMessage must be a string',
+            code: 1
+          })
+        );
     }
     typeof onMessage === 'function' &&
       onMessage(createNativeEvent({ ...eventBase, data: message }));
@@ -121,7 +131,8 @@ export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
         onLoad: userOnLoad,
         onLoadEnd,
         onLoadProgress,
-        onNavigationStateChange
+        onNavigationStateChange,
+        onError
       }
     }: DOMBackendProps,
     ref
@@ -152,6 +163,7 @@ export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
         onLoad,
         onLoadEnd,
         onNavigationStateChange,
+        onError,
         loadCycleId
       });
     }, [
@@ -167,6 +179,7 @@ export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
       onLoad,
       onLoadEnd,
       onNavigationStateChange,
+      onError,
       loadCycleId
     ]);
     useImperativeHandle(

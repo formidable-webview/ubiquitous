@@ -5,6 +5,7 @@ import makeErsatzTesting from '@formidable-webview/ersatz-testing';
 import nock from 'nock';
 import { WebViewProps, WebViewNavigation } from 'react-native-webview';
 import { createNativeEvent } from '../events';
+import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 
 const { waitForDocument, waitForErsatz, waitForWindow } = makeErsatzTesting(
   Ersatz
@@ -135,6 +136,37 @@ describe('WebView component', () => {
       )
     );
     expect(document.getElementsByTagName('header')).toHaveLength(1);
+  });
+  describe('regarding Native to JS communication', () => {
+    it('should invoke onMessage handler when window.ReactNativeWebview.postMessage is invoked in the DOM with a text argument', async () => {
+      const onMessage = jest.fn();
+      const rendererApi = render(
+        <Ersatz
+          injectedJavaScript="window.ReactNativeWebView.postMessage('Hello world!');"
+          onMessage={onMessage}
+          source={{ html: '<div></div>' }}
+        />
+      );
+      await waitForErsatz(rendererApi);
+      expect(onMessage).toHaveBeenCalledWith(
+        createNativeEvent<WebViewMessage>({
+          data: 'Hello world!',
+          url: 'about:blank'
+        })
+      );
+    });
+    it('should invoke onError when window.ReactNativeWebview.postMessage is invoked in the DOM with a non-text argument', async () => {
+      const onError = jest.fn();
+      const rendererApi = render(
+        <Ersatz
+          injectedJavaScript="window.ReactNativeWebView.postMessage({});"
+          onError={onError}
+          source={{ html: '<div></div>' }}
+        />
+      );
+      await waitForErsatz(rendererApi);
+      expect(onError).toHaveBeenCalledTimes(1);
+    });
   });
   describe('regarding loading cycles', () => {
     it('should create a new DOM object after reload', async () => {
