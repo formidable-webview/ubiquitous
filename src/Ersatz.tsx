@@ -129,15 +129,6 @@ export class Ersatz<
       scrollEnabled,
       directionalLockEnabled
     } = this.props;
-    const sourceLoader = source ? (
-      <SourceLoader
-        children={this.renderBackend}
-        renderLoading={renderLoading}
-        onHttpError={onHttpError}
-        source={source}
-        cancelled={false}
-      />
-    ) : null;
     return (
       <ScrollView
         ref={this.scrollview}
@@ -149,7 +140,13 @@ export class Ersatz<
         scrollEnabled={scrollEnabled}
         directionalLockEnabled={directionalLockEnabled}
         style={style}>
-        {sourceLoader}
+        <SourceLoader
+          children={this.renderBackend}
+          renderLoading={renderLoading}
+          onHttpError={onHttpError}
+          source={source}
+          cancelled={false}
+        />
       </ScrollView>
     );
   }

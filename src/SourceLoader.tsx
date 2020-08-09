@@ -10,7 +10,7 @@ import { createNativeEvent } from './events';
 import { View } from 'react-native';
 
 export interface SourceLoaderProps {
-  source: WebViewSource;
+  source?: WebViewSource;
   children: (source: NormalSource) => ReactElement;
   renderLoading?: () => ReactElement;
   onHttpError?: (event: WebViewHttpErrorEvent) => void;
@@ -26,6 +26,14 @@ function isSourceUri(source: WebViewSource): source is WebViewSourceUri {
   return !!(source as any).uri ?? false;
 }
 
+function isWebViewSource(source: unknown): source is WebViewSource {
+  return source != null
+    ? typeof source === 'object' &&
+        (typeof (source as any).uri === 'string' ||
+          typeof (source as any).html === 'string')
+    : false;
+}
+
 export function SourceLoader({
   source,
   children,
@@ -39,6 +47,10 @@ export function SourceLoader({
 
   useEffect(() => {
     let isSubscribed = true;
+    if (!isWebViewSource(source)) {
+      setNormalizedSource({ url: '', html: '' });
+      return;
+    }
     if (isSourceUri(source)) {
       const { uri, headers, method, body } = source;
       async function fetchSource() {

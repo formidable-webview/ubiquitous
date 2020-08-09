@@ -94,6 +94,15 @@ function testInjectedScriptProp<T extends keyof WebViewProps>(
       );
       expect(window.awesomeProp).toEqual(1);
     });
+    it(`should run ${scriptProperty} when source is not set or empty`, async () => {
+      const props: any = {
+        [scriptProperty]: 'window.awesomeProp = 1;'
+      };
+      const window = await waitForWindow(
+        render(<Ersatz javaScriptEnabled={true} {...props} />)
+      );
+      expect(window.awesomeProp).toEqual(1);
+    });
   });
 }
 

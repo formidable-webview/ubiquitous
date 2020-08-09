@@ -134,6 +134,7 @@ event. Our manual tests found out that both scripts have access to
 **Edge cases**
 
 - When loaded with an undefined `source` prop, onLoadStart is triggered with `loading: false`.
+- When loaded with an undefined `source` prop, `injectedJavaScript` and other scripts are still run.
 - When loaded with a `source.url` prop, `url` in events is set to `about:blank`.
 
 ## Caveats
