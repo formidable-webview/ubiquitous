@@ -154,11 +154,6 @@ describe('WebView component', () => {
     });
     await waitForErsatz(renderAPI);
   });
-  it('should render nothing when no source prop is passed', async () => {
-    const { UNSAFE_getByType, queryByTestId } = render(<Ersatz />);
-    UNSAFE_getByType(Ersatz);
-    expect(queryByTestId('ersatz-source-loader')).toBeFalsy();
-  });
   describe('regarding instance methods', () => {
     it('should do nothing when goBack is invoked', async () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
