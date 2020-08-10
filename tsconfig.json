@@ -1,20 +1,11 @@
 {
+  "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "lib": ["es6"],
     "allowJs": false,
     "composite": false,
-    "jsx": "react-native",
     "outDir": "./lib",
-    "removeComments": false,
-    "declaration": true,
-    "isolatedModules": true,
-    "strict": true,
-    "moduleResolution": "node",
-    "baseUrl": "./",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "noEmit": false,
+    "declaration": true
   },
   "exclude": ["node_modules"]
 }
