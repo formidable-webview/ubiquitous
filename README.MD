@@ -5,7 +5,9 @@
 
 # @formidable-webview/ersatz
 
-> :warning: _This library is in early development._
+:rocket: Emulate and test `WebView` behaviors in node with
+[`jest`](https://jestjs.io/) and [`jsdom`](https://github.com/jsdom/jsdom#readme)
+(written in Typescript :blue_heart:)
 
 ## When Should I Use this Library?
 
@@ -23,13 +25,16 @@ The easiest way to use `Ersatz` is in combination with
 [`@formidable-webview/ersatz-testing`](https://www.npmjs.com/package/@formidable-webview/ersatz-testing)
 and
 [`@testing-library/react-native`](https://www.npmjs.com/package/@testing-library/react-native).
-**[See examples here](https://github.com/formidable-webview/ersatz-testing#readme)**.
+**[See examples
+here](https://github.com/formidable-webview/ersatz-testing#readme)**. Because
+there is no hard dependency on jest, You should be able to use `Ersatz` with
+any testing framework running on node, capable of mounting React components.
 
 ## Compatibility Table
 
 | @formidable-webview/ersatz | react-native-webview |
 | -------------------------- | -------------------- |
-| 0.10                       | ≥ 7.6.0 < 11         |
+| 1.0.0                      | ≥ 7.6.0 < 11         |
 
 ## Emulated Features
 
