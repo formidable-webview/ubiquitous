@@ -46,7 +46,7 @@ visual rendering) and will be ignored:
 
 | Prop                                                    | Support            | Comments                                                                                                                          |
 | ------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `source`                                                | :warning:          | Both remote URI (including body, headers and method) and inline HTML are supported. Local files are not supported.                |
+| `source`                                                | :heavy_check_mark: | Both remote URI (including body, headers and method) and inline HTML are supported. Local files are not supported.                |
 | `javaScriptEnabled`                                     | :heavy_check_mark: |                                                                                                                                   |
 | `containerStyle`                                        | :heavy_check_mark: | Mapped to ScrollView `contentContainerStyle`.                                                                                     |
 | `renderError`                                           | :heavy_check_mark: |                                                                                                                                   |
