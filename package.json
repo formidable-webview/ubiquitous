@@ -73,7 +73,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@formidable-webview/ersatz-core": "^0.10.1-alpha.5",
+    "@formidable-webview/ersatz-core": "^1.0.0",
     "assert": "^2.0.0",
     "canvas": "^2.6.1",
     "jsdom": "^16.4.0",
