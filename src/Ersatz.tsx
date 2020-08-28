@@ -12,9 +12,11 @@ import { JSDOMBackend } from './JSDOMBackend';
 import { SourceLoader, NormalSource } from './SourceLoader';
 
 export class Ersatz<
-  D extends DocumentShape = DocumentShape,
-  W extends WindowShape = WindowShape
-> extends PureComponent<WebViewProps> implements DOMBackendHandle {
+    D extends DocumentShape = DocumentShape,
+    W extends WindowShape = WindowShape
+  >
+  extends PureComponent<WebViewProps>
+  implements DOMBackendHandle {
   static defaultProps: Partial<WebViewProps> = {
     javaScriptEnabled: true
   };
