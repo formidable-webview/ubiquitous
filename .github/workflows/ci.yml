@@ -20,14 +20,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run test:ts
+    - run: yarn install --immutable
+    - run: yarn run test:ts
       name: Typescript Tests
-    - run: npm run test:lint
+    - run: yarn run test:lint
       name: Linting Tests
-    - run: npm run test:jest -- --coverage
+    - run: yarn run test:jest --coverage
       name: Behavior Tests
-    - run: npm run build
+    - run: yarn run build
       name: Build
     - uses: codecov/codecov-action@v1
       with:

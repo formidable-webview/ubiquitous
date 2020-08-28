@@ -1,11 +1,9 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json",
+  "extends": "@tsconfig/react-native",
   "compilerOptions": {
-    "allowJs": false,
-    "composite": false,
     "outDir": "./lib",
-    "noEmit": false,
-    "declaration": true
+    "declaration": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
