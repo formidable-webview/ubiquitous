@@ -1,6 +1,6 @@
 {
   "name": "@formidable-webview/ersatz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🚀 Emulate and test WebView behaviors in node with jest and jsdom",
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
