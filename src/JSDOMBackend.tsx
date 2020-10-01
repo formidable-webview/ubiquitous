@@ -194,7 +194,7 @@ export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
         stopLoading() {},
         requestFocus() {},
         injectJavaScript(script: string) {
-          backendState === 'loaded' && dom.window.eval(script);
+          dom.window.eval(script);
         },
         getDocument() {
           return dom.window?.document as any;
@@ -203,7 +203,7 @@ export const JSDOMBackend = forwardRef<DOMBackendHandle, DOMBackendProps>(
           return dom.window as any;
         }
       }),
-      [dom, loadCycleId, backendState]
+      [dom, loadCycleId]
     );
     const children =
       backendState === 'loaded' ? (
