@@ -18,10 +18,11 @@ export type DOMBackendProps = Pick<
   | 'injectedJavaScriptBeforeContentLoaded'
   | 'javaScriptEnabled'
   | 'userAgent'
+  | 'source'
 > & {
-  html: string;
-  url: string;
   domHandlers: DOMBackendHandlers;
+  renderLoading?: () => ReactElement;
+  onHttpError?: (event: WebViewHttpErrorEvent) => void;
 };
 
 export type DOMBackendState = 'loading' | 'loaded';
@@ -50,6 +51,29 @@ export type DOMBackendHandle<
   getWindow(): W;
 };
 
-export type DOMBackendComponent = Component<
-  DOMBackendProps & RefAttributes<DOMBackendHandle>
->;
+export interface ComponentInstanceWithRef<H, P> extends Component<P, any>, H {}
+
+export interface ComponentClassWithHandle<H, P> extends ComponentClass<P> {
+  new (props: P, context?: any): ComponentInstanceWithRef<H, P>;
+}
+
+export interface FunctionComponentWithRef<H, P>
+  extends React.ForwardRefExoticComponent<P & React.RefAttributes<H>> {}
+
+export type ComponentTypeWithRef<H, P> =
+  | ComponentClassWithHandle<H, P>
+  | FunctionComponentWithRef<H, P>;
+
+export interface DOMBackendComponentInstance
+  extends Component<DOMBackendProps, any>,
+    DOMBackendHandle {}
+
+export interface DOMBackendComponentClass
+  extends ComponentClassWithHandle<DOMBackendHandle, DOMBackendProps> {}
+
+export interface DOMBackendFunctionComponent
+  extends FunctionComponentWithRef<DOMBackendHandle, DOMBackendProps> {}
+
+export type DOMBackendComponent =
+  | DOMBackendComponentClass
+  | DOMBackendFunctionComponent;
