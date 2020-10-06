@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { Ersatz } from '../Ersatz';
 import { render, act } from '@testing-library/react-native';
-import makeErsatzTesting from '@formidable-webview/ersatz-testing';
+import {
+  waitForDocument,
+  waitForWindow,
+  waitForErsatz
+} from '@formidable-webview/ersatz-testing';
 import nock from 'nock';
 import { WebViewProps, WebViewNavigation } from 'react-native-webview';
 import { createNativeEvent } from '../events';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { View } from 'react-native';
-
-const { waitForDocument, waitForErsatz, waitForWindow } = makeErsatzTesting(
-  Ersatz
-);
 
 function nockFooBar() {
   const resource = 'https://foo.bar';

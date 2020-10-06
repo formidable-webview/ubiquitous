@@ -21,7 +21,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: yarn install --immutable
-    - run: yarn build:ersatz-testing
+    - run: yarn build:skeletton; yarn build:ersatz-testing
       name: Build Dependencies
     - run: yarn test:ersatz:ts
       name: Typescript Tests
