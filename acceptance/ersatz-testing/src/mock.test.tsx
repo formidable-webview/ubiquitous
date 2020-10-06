@@ -1,11 +1,8 @@
 jest.mock('react-native-webview');
 import * as React from 'react';
-import Ersatz from '@formidable-webview/ersatz';
-import makeErsatzTesting from '@formidable-webview/ersatz-testing';
+import { waitForWindow } from '@formidable-webview/ersatz-testing';
 import { render } from '@testing-library/react-native';
 import { default as WebView, WebViewProps } from 'react-native-webview';
-
-const { waitForWindow } = makeErsatzTesting(Ersatz);
 
 const MyComponent = ({ source }: Pick<WebViewProps, 'source'>) => (
   <WebView source={source} injectedJavaScript={'window.awesomeGlobal = 1;'} />

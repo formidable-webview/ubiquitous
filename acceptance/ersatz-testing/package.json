@@ -10,7 +10,7 @@
     "@formidable-webview/ersatz": "workspace:*",
     "@formidable-webview/ersatz-testing": "workspace:*",
     "@testing-library/react-native": "^7.0.2",
-    "jest": "^26.5.0",
+    "jest": "^26.5.2",
     "react": "16.13.1",
     "react-native": "^0.63.3",
     "react-native-webview": "^10.9.2",
@@ -27,7 +27,7 @@
     "@types/react": "^16.9.51",
     "@types/react-native": "^0.63.25",
     "@types/react-test-renderer": "^16.9.3",
-    "babel-jest": "^26.5.0",
+    "babel-jest": "^26.5.2",
     "metro-react-native-babel-preset": "^0.63.0",
     "typescript": "~3.9.7"
   }
