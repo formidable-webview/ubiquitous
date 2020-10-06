@@ -53,6 +53,10 @@ buck-out/
 android/app/libs
 android/keystores/debug.keystore
 
+# Todos
+
+*.todo
+
 # Expo
 .expo/*
 
@@ -64,5 +68,5 @@ android/keystores/debug.keystore
 !.yarn/versions
 
 # This Project
-/coverage
-/lib
+coverage
+lib

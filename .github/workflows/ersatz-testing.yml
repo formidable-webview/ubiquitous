@@ -1,0 +1,35 @@
+# This workflow will do a clean install of node dependencies, run JS and Typescript tests.
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: ersatz-testing
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn install --immutable
+    - run: yarn test:ersatz-testing:ts
+      name: Typescript Tests
+    - run: yarn test:ersatz-testing:lint
+      name: Linting Tests
+    - run: yarn test:ersatz-testing:doc
+      name: Documentation Tests
+    - run: yarn build:ersatz-testing
+      name: Build
+    - run: yarn build:ersatz
+      name: Prepare Acceptance
+    - run: yarn test:ersatz-testing:acceptance
+      name: Acceptance tests

@@ -1,0 +1,13 @@
+coverage:
+  precision: 2
+  round: up
+  range: '70...100'
+  status:
+    ersatz:
+      flags:
+        - ersatz
+
+flags:
+  ersatz:
+    paths:
+      - packages/ersatz/coverage/cover.xml
