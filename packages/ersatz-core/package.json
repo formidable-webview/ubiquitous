@@ -1,0 +1,48 @@
+{
+  "name": "@formidable-webview/ersatz-core",
+  "version": "1.0.0",
+  "description": "⚓ Core API definitions for @formidable-webview/ersatz written in Typescript",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "npm run test:ts && npm run test:lint",
+    "test:ts": "tsc --noEmit",
+    "test:lint": "eslint --ext ts,tsx src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/formidable-webview/ersatz.git"
+  },
+  "keywords": [
+    "@formidable-webview/ersatz"
+  ],
+  "author": "Jules Sam. Randolph <jules.sam.randolph@gmail.com> (https://github.com/jsamr)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/formidable-webview/ersatz/issues"
+  },
+  "homepage": "https://github.com/formidable-webview/ersatz/tree/master/packages/ersatz-core#readme",
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^2.0.0",
+    "@tsconfig/react-native": "^1.0.2",
+    "@types/react": "^16.9.51",
+    "@types/react-native": "^0.63.25",
+    "eslint": "^7.10.0",
+    "react": "16.13.1",
+    "react-native": "^0.63.3",
+    "react-native-webview": "^10.9.2",
+    "release-it": "^14.0.3",
+    "typescript": "~3.9.7"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-webview": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
