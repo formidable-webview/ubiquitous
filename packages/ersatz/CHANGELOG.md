@@ -19,11 +19,6 @@ need to upgrade that one too.
 * chore: release @formidable-webview/ersatz@ (16ea40f)
 
 
-
-
-
-## [1.0.2](https://github.com/formidable-webview/ersatz/compare/v1.0.1...${name}@1.0.2) (2020-10-05)
-
 ## [1.0.1](https://github.com/formidable-webview/ersatz/compare/v1.0.0...v1.0.1) (2020-10-01)
 
 
