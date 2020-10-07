@@ -1,0 +1,14 @@
+diff --git a/index.js b/index.js
+index abbce1815895b044bac47588a327f1b049304b8d..e1266a84c7984ee6f4944e0c4595c7410a69bed0 100644
+--- a/index.js
++++ b/index.js
+@@ -68,7 +68,8 @@ class ConventionalChangelog extends Plugin {
+       Object.assign(options, this.options),
+       { version, previousTag, currentTag },
+       {
+-        debug: this.config.isDebug ? this.debug : null
++        debug: this.config.isDebug ? this.debug : null,
++        path: './'
+       }
+     );
+   }
