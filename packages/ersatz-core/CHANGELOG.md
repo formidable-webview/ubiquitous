@@ -1,6 +1,6 @@
 ## [2.0.2](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz-core@2.0.1...@formidable-webview/ersatz-core@2.0.2) (2020-10-07)
 
-### Bugfixes
+### Bug Fixes
 
 - Fix release-it compatibility with yarn berry workspaces
 
