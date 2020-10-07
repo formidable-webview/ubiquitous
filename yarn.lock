@@ -2640,7 +2640,7 @@ __metadata:
 
 "@release-it/conventional-changelog@patch:@release-it/conventional-changelog@2.0.0#patches/@release-it-conventional-changelog.patch::locator=ersatz-poject%40workspace%3A.":
   version: 2.0.0
-  resolution: "@release-it/conventional-changelog@patch:@release-it/conventional-changelog@npm%3A2.0.0#patches/@release-it-conventional-changelog.patch::version=2.0.0&hash=03e24e&locator=ersatz-poject%40workspace%3A."
+  resolution: "@release-it/conventional-changelog@patch:@release-it/conventional-changelog@npm%3A2.0.0#patches/@release-it-conventional-changelog.patch::version=2.0.0&hash=6e3e22&locator=ersatz-poject%40workspace%3A."
   dependencies:
     concat-stream: ^2.0.0
     conventional-changelog: ^3.1.23
@@ -2648,7 +2648,7 @@ __metadata:
     prepend-file: ^2.0.0
   peerDependencies:
     release-it: ^14.0.0
-  checksum: 0419c48e27c057ef80edd591696ad4f8481d402b0342d9f4a0e5acb08d73e81325f73467eadfed8206a433d7e8b39fcac7cda2935a7c93aae98497f59890b2ad
+  checksum: b3ef241fa6cdab761158eee85fd8703e8ba52481e8f08d92c469dc12f2879779aed6d8ff68cf084a9849f81b1e8e8e9deca41d99bdbb93e4ce641841286cd3c5
   languageName: node
   linkType: hard
 
@@ -11883,7 +11883,7 @@ release-it@14.0.4:
 
 "release-it@patch:release-it@14.0.4#patches/release-it.patch::locator=ersatz-poject%40workspace%3A.":
   version: 14.0.4
-  resolution: "release-it@patch:release-it@npm%3A14.0.4#patches/release-it.patch::version=14.0.4&hash=93ff19&locator=ersatz-poject%40workspace%3A."
+  resolution: "release-it@patch:release-it@npm%3A14.0.4#patches/release-it.patch::version=14.0.4&hash=703bfd&locator=ersatz-poject%40workspace%3A."
   dependencies:
     "@iarna/toml": 2.2.5
     "@octokit/rest": 18.0.6
@@ -11915,7 +11915,7 @@ release-it@14.0.4:
     yargs-parser: 20.2.1
   bin:
     release-it: bin/release-it.js
-  checksum: 57ccf410a7efc5c0a66a9e51136b4b9b45485eec6422eaa5c16ec47bb99c7511ffe4e6c94a69ec1e07803b1292e875896d60302f7b9607d00025db3eff1d8547
+  checksum: ae8acf9872c0247897a7020f1e1527d1cb78f23c76589b36e6746fbde53f60ed2d5f47eb9fe919cfd6ccc2c2667f6a00e3685766cb2b190fc34c305b9e1f2aff
   languageName: node
   linkType: hard
 
