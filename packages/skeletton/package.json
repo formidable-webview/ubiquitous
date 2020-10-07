@@ -34,7 +34,8 @@
     "prepare": "yarn run build"
   },
   "dependencies": {
-    "assert": "^2.0.0"
+    "assert": "^2.0.0",
+    "@formidable-webview/ersatz-core": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",
