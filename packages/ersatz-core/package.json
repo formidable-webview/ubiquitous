@@ -1,6 +1,6 @@
 {
   "name": "@formidable-webview/ersatz-core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "⚓ Core API definitions for @formidable-webview/ersatz written in Typescript",
   "main": "src/index.js",
   "types": "src/index.d.ts",
