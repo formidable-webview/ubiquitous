@@ -6,8 +6,8 @@ import {
   WebViewSourceUri,
   WebViewHttpErrorEvent
 } from 'react-native-webview/lib/WebViewTypes';
-import { createNativeEvent } from './events';
 import { View } from 'react-native';
+import { webViewLifecycle } from '@formidable-webview/skeletton';
 
 export interface SourceLoaderProps {
   source?: WebViewSource;
@@ -63,13 +63,12 @@ export function SourceLoader({
           return response.text() as Promise<string>;
         } else {
           const description = await response.text();
-          typeof onHttpError === 'function' &&
-            onHttpError(
-              createNativeEvent({
-                description: description,
-                statusCode: response.status
-              })
-            );
+          webViewLifecycle.handleHttpError(
+            onHttpError,
+            description,
+            response.status,
+            uri
+          );
         }
       }
       fetchSource().then(

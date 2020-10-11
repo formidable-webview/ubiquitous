@@ -7,9 +7,8 @@ import {
   waitForErsatz
 } from '@formidable-webview/ersatz-testing';
 import nock from 'nock';
-import { WebViewProps, WebViewNavigation } from 'react-native-webview';
-import { createNativeEvent } from '../events';
-import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
+import { WebViewProps } from 'react-native-webview';
+import { eventFactory } from '@formidable-webview/skeletton';
 import { View } from 'react-native';
 
 function nockFooBar() {
@@ -217,10 +216,10 @@ describe('WebView component', () => {
       );
       await waitForErsatz(rendererApi);
       expect(onMessage).toHaveBeenCalledWith(
-        createNativeEvent<WebViewMessage>({
-          data: 'Hello world!',
-          url: 'about:blank'
-        })
+        eventFactory.createMessageEvent(
+          { title: '', url: 'about:blank' },
+          'Hello world!'
+        )
       );
     });
     it('should invoke onError when window.ReactNativeWebview.postMessage is invoked in the DOM with a non-text argument', async () => {
@@ -305,18 +304,15 @@ describe('WebView component', () => {
         )
       );
       expect(onLoad).toHaveBeenCalledWith(
-        createNativeEvent<WebViewNavigation>({
+        eventFactory.createLoadEndEvent({
           url: 'https://foo.bar/200',
-          title: 'Hello world',
-          navigationType: 'other'
+          title: 'Hello world'
         })
       );
       expect(onLoadStart).toHaveBeenCalledWith(
-        createNativeEvent<WebViewNavigation>({
+        eventFactory.createLoadStartEvent({
           url: 'https://foo.bar/200',
-          title: 'Hello world',
-          navigationType: 'other',
-          loading: true
+          title: 'Hello world'
         })
       );
     });
@@ -336,18 +332,15 @@ describe('WebView component', () => {
         )
       );
       expect(onLoad).toHaveBeenCalledWith(
-        createNativeEvent<WebViewNavigation>({
+        eventFactory.createLoadEndEvent({
           url: 'about:blank',
-          title: 'Hello world',
-          navigationType: 'other'
+          title: 'Hello world'
         })
       );
       expect(onLoadStart).toHaveBeenCalledWith(
-        createNativeEvent<WebViewNavigation>({
+        eventFactory.createLoadStartEvent({
           url: 'about:blank',
-          title: 'Hello world',
-          navigationType: 'other',
-          loading: true
+          title: 'Hello world'
         })
       );
     });

@@ -6,23 +6,18 @@ import {
   forwardRef
 } from 'react';
 import { JSDOM } from 'jsdom';
-import {
-  WebViewNavigationEvent,
-  WebViewNativeProgressEvent,
-  WebViewNavigation,
-  WebViewError
-} from 'react-native-webview/lib/WebViewTypes';
+import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import type {
   DOMBackendHandle,
   DOMBackendHandlers,
   DOMBackendProps,
   DOMBackendState
 } from '@formidable-webview/ersatz-core';
-import { createNativeEvent } from './events';
+import { webViewLifecycle } from '@formidable-webview/skeletton';
 import { View } from 'react-native';
 import React from 'react';
 
-type InitDOMParams = DOMBackendHandlers & {
+type InitDOMParams = {
   html: string;
   url?: string;
   injectedJavaScriptBeforeContentLoaded?: string;
@@ -30,6 +25,7 @@ type InitDOMParams = DOMBackendHandlers & {
   javaScriptEnabled?: boolean;
   userAgent?: string;
   loadCycleId: number;
+  domHandlers: DOMBackendHandlers;
 };
 
 function initDOM({
@@ -37,13 +33,7 @@ function initDOM({
   url,
   injectedJavaScriptBeforeContentLoaded,
   injectedJavaScript,
-  onMessage,
-  onLoad,
-  onLoadStart,
-  onLoadProgress,
-  onLoadEnd,
-  onError,
-  onNavigationStateChange,
+  domHandlers,
   javaScriptEnabled,
   userAgent
 }: InitDOMParams): JSDOM {
@@ -56,19 +46,7 @@ function initDOM({
     }
   };
   const postMessage = (message: string) => {
-    if (typeof message !== 'string') {
-      typeof onError === 'function' &&
-        onError(
-          createNativeEvent<WebViewError>({
-            ...eventBase,
-            description:
-              'WebView: the argument of postMessage must be a string',
-            code: 1
-          })
-        );
-    }
-    typeof onMessage === 'function' &&
-      onMessage(createNativeEvent({ ...eventBase, data: message }));
+    webViewLifecycle.handlePostMessage(domHandlers, eventBase, message);
   };
   const dom = new JSDOM(html, {
     [url ? 'url' : '']: url,
@@ -91,28 +69,9 @@ function initDOM({
       dom.window.eval(injectedJavaScript);
   });
   dom.window.addEventListener('load', () => {
-    const loadEvent = createNativeEvent<WebViewNavigation>({
-      ...eventBase,
-      navigationType: 'other'
-    });
-    const loadProgress = createNativeEvent<WebViewNativeProgressEvent>({
-      ...eventBase,
-      progress: 1
-    });
-    typeof onLoadProgress === 'function' && onLoadProgress(loadProgress);
-    typeof onLoad === 'function' && onLoad(loadEvent);
-    typeof onLoadEnd === 'function' && onLoadEnd(loadEvent);
-    typeof onNavigationStateChange === 'function' &&
-      onNavigationStateChange(loadEvent.nativeEvent);
+    webViewLifecycle.handleLoadEnd(domHandlers, eventBase);
   });
-  const startEvent = createNativeEvent<WebViewNavigation>({
-    ...eventBase,
-    loading: true,
-    navigationType: 'other'
-  });
-  typeof onLoadStart === 'function' && onLoadStart(startEvent);
-  typeof onNavigationStateChange === 'function' &&
-    onNavigationStateChange(startEvent.nativeEvent);
+  webViewLifecycle.handleLoadStart(domHandlers, eventBase);
   return dom;
 }
 
@@ -136,18 +95,11 @@ export const JSDOMDOMEngine = forwardRef<
     javaScriptEnabled,
     injectedJavaScriptBeforeContentLoaded,
     userAgent,
-    domHandlers: {
-      onMessage,
-      onLoadStart,
-      onLoad: userOnLoad,
-      onLoadEnd,
-      onLoadProgress,
-      onNavigationStateChange,
-      onError
-    }
+    domHandlers
   }: JSDOMBackendEngineProps,
   ref
 ) {
+  const { onLoad: userOnLoad } = domHandlers;
   const [backendState, setBackendState] = useState<DOMBackendState>('loading');
   // This state variable permits imperative reloadings
   const [loadCycleId, setLoadCycleId] = useState(0);
@@ -166,15 +118,10 @@ export const JSDOMDOMEngine = forwardRef<
       injectedJavaScript,
       javaScriptEnabled,
       userAgent,
-      onMessage,
-      onLoadStart,
-      onLoadProgress,
-      onLoad,
-      onLoadEnd,
-      onNavigationStateChange,
-      onError,
+      domHandlers: { ...domHandlers, onLoad },
       loadCycleId
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     html,
     url,
@@ -182,14 +129,10 @@ export const JSDOMDOMEngine = forwardRef<
     injectedJavaScriptBeforeContentLoaded,
     injectedJavaScript,
     javaScriptEnabled,
-    onMessage,
-    onLoadStart,
-    onLoadProgress,
+    loadCycleId,
     onLoad,
-    onLoadEnd,
-    onNavigationStateChange,
-    onError,
-    loadCycleId
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ...Object.values(domHandlers)
   ]);
   useImperativeHandle(
     ref,

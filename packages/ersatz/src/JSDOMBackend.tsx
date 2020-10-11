@@ -1,10 +1,9 @@
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import type {
   DOMBackendFunctionComponent,
   DOMBackendHandle,
   DOMBackendProps
 } from '@formidable-webview/ersatz-core';
-import React from 'react';
 import { SourceLoader } from './SourceLoader';
 import { JSDOMDOMEngine } from './JSDOMEngine';
 
