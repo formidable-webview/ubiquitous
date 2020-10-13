@@ -5,7 +5,13 @@ import React, {
   forwardRef,
   useImperativeHandle
 } from 'react';
-import { StyleSheet, View, ViewProps } from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewProps,
+  ViewStyle
+} from 'react-native';
 import { unstable_createElement } from 'react-native-web';
 import { webViewLifecycle } from '@formidable-webview/skeletton';
 import type {
@@ -13,6 +19,22 @@ import type {
   DOMBackendHandle,
   DOMBackendProps
 } from '@formidable-webview/ersatz-core';
+
+let globalFrameId = 0;
+
+function normalizeDimensions(style: StyleProp<ViewStyle>) {
+  const { width, height } = StyleSheet.flatten([
+    { width: 0, height: 0 },
+    style
+  ]);
+  return {
+    width,
+    height: width ? height : 0,
+    wrapperHeight: `max(100%, ${
+      typeof height === 'number' ? `${height}px` : height
+    })`
+  };
+}
 
 export const WebBackend: DOMBackendFunctionComponent = forwardRef(
   (
@@ -31,8 +53,10 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
     ref
   ) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const { width, height } = StyleSheet.flatten(style);
-    const ownerOrigin = document.location.href;
+    const frameId = useRef(globalFrameId++).current;
+    const handlersArray = Object.values(domHandlers);
+    const { width, height, wrapperHeight } = normalizeDimensions(style);
+    const ownerOrigin = document.location.origin;
     const uri = (source as any)?.uri;
     const html = (source as any)?.html;
     const eventBase = React.useMemo(
@@ -52,6 +76,7 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
         },
         injectJavaScript(javaScript: string) {
           const document = this.getDocument();
+          console.info(document, iframeRef.current?.contentDocument);
           const script = document.createElement('script');
           script.innerText = javaScript;
           document.body.appendChild(script);
@@ -75,48 +100,55 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
       []
     );
     const iframeProps: JSX.IntrinsicElements['iframe'] & {
-      allowPaymentRequest: boolean;
+      allowpaymentrequest: string;
     } = {
       width,
-      height,
-      allow: 'fullscreen',
+      height: '100%',
       ref: iframeRef,
-      src: uri,
       style: styles.iframe,
+      src: uri,
       srcDoc: (source as any)?.html,
+      allow: 'fullscreen',
       allowFullScreen: true,
-      allowPaymentRequest: true,
+      allowpaymentrequest: 'true',
       sandbox: `allow-same-origin ${
         javaScriptEnabled ? 'allow-scripts' : ''
       } allow-popups allow-forms`
     };
+    useEffect(
+      function initEffect() {
+        console.info('ON LOAD START', uri);
+        webViewLifecycle.handleLoadStart(domHandlers, eventBase);
+        const ifwindow = backendHandle.getWindow() as Window & {
+          ReactNativeWebView: any;
+        };
+        ifwindow.ReactNativeWebView = {
+          postMessage(message: string) {
+            ifwindow.parent.postMessage({ message, frameId }, ownerOrigin);
+          }
+        };
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [...handlersArray]
+    );
     useEffect(() => {
-      // load start
-      console.info('ON LOAD START', eventBase);
-      webViewLifecycle.handleLoadStart(domHandlers, eventBase);
       function handleContentLoadEnd() {
+        console.info('ON CONTENT LOAD END', eventBase);
         injectedJavaScriptBeforeContentLoaded &&
           backendHandle.injectJavaScript(injectedJavaScriptBeforeContentLoaded);
       }
       function handleLoadEnd() {
+        console.info('ON LOAD END', eventBase);
         injectedJavaScript &&
           backendHandle.injectJavaScript(injectedJavaScript);
-        console.info('ON LOAD END', eventBase);
         webViewLifecycle.handleLoadEnd(domHandlers, eventBase);
       }
-      const ifwindow = backendHandle.getWindow() as Window & {
-        ReactNativeWebView: any;
-      };
-      ifwindow.addEventListener('load', handleLoadEnd);
-      ifwindow.addEventListener('DOMContentLoaded', handleContentLoadEnd);
-      ifwindow.ReactNativeWebView = {
-        postMessage(message: string) {
-          ifwindow.top.postMessage(message, ownerOrigin);
-        }
-      };
+      const iframe = iframeRef.current;
+      iframe?.addEventListener('load', handleLoadEnd);
+      iframe?.addEventListener('DOMContentLoaded', handleContentLoadEnd);
       return () => {
-        ifwindow.removeEventListener('load', handleLoadEnd);
-        ifwindow.removeEventListener('DOMContentLoaded', handleContentLoadEnd);
+        iframe?.removeEventListener('load', handleLoadEnd);
+        iframe?.removeEventListener('DOMContentLoaded', handleContentLoadEnd);
       };
     }, [
       uri,
@@ -124,43 +156,41 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
       injectedJavaScript,
       backendHandle,
       eventBase,
+      frameId,
       injectedJavaScriptBeforeContentLoaded,
       domHandlers,
       ownerOrigin
     ]);
-    useEffect(() => {
-      function handleMessage({
-        data,
-        source: emitter,
-        origin
-      }: MessageEvent<string>) {
-        console.info(
-          'RECEIVED MESSAGE',
-          data,
-          'FROM ORIGIN',
-          origin,
-          'MATCHING OWNER?',
-          origin === ownerOrigin
-        );
-        emitter === iframeRef.current &&
-          ownerOrigin === origin &&
-          webViewLifecycle.handlePostMessage(
-            domHandlers,
-            {
-              url: uri ?? 'about:blank',
-              title: ''
-            },
-            data
-          );
-      }
-      window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
+    useEffect(
+      function messageEffect() {
+        function handleMessage({ data, origin }: MessageEvent) {
+          data &&
+            data.frameId === frameId &&
+            ownerOrigin === origin &&
+            webViewLifecycle.handlePostMessage(
+              domHandlers,
+              {
+                url: uri ?? 'about:blank',
+                title: ''
+              },
+              data.message
+            );
+        }
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+      },
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [uri, html, ...Object.values(domHandlers)]);
+      [uri, html, ...handlersArray]
+    );
     useImperativeHandle(ref, () => backendHandle, [backendHandle]);
     const iframe = unstable_createElement('iframe', iframeProps);
     return (
-      <View style={style} onLayout={onLayout}>
+      <View
+        onLayout={onLayout}
+        style={[
+          { width, height: wrapperHeight, minHeight: height },
+          styles.container
+        ]}>
         {iframe}
       </View>
     );
@@ -169,7 +199,13 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
 
 const styles = StyleSheet.create({
   iframe: {
-    width: '100%',
-    height: 'auto'
+    flexGrow: 1,
+    borderWidth: 0,
+    flexBasis: 'auto'
+  },
+  container: {
+    display: 'flex',
+    flexBasis: 'auto',
+    flex: 1
   }
 });

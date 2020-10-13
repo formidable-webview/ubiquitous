@@ -1,0 +1,18 @@
+= Iframe Security Considerations
+
+X attributes address security issues in iframes:
+
+- `allow`
+- `csp`
+- `referrerpolicy`
+- `sanbox`
+
+== CORS
+
+
+=== X-Frame-Options
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options SAMEORIGIN
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
+x-content-type-options nosniff
