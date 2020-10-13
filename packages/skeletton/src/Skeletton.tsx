@@ -1,7 +1,7 @@
 import React from 'react';
 import { WebViewProps } from 'react-native-webview';
 import { PureComponent, createRef } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import {
   DOMBackendHandle,
   WindowShape,
@@ -9,6 +9,46 @@ import {
   DOMBackendComponent
 } from '@formidable-webview/ersatz-core';
 import assert from 'assert';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    overflow: 'hidden'
+  },
+  loadingOrErrorView: {
+    position: 'absolute',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'white'
+  },
+  loadingProgressBar: {
+    height: 20
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 2
+  },
+  errorTextTitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 10
+  },
+  webView: {
+    flex: 0,
+    height: '100%',
+    width: 0,
+    backgroundColor: '#ffffff'
+  },
+  webViewWrapper: {
+    margin: 0,
+    padding: 0,
+    flex: 1
+  }
+});
 
 export class Skeletton<
     D extends DocumentShape = DocumentShape,
@@ -104,17 +144,19 @@ export class Skeletton<
       style,
       userAgent
     } = this.props;
+    const webViewContainerStyle = [styles.container, containerStyle];
+    const webViewStyle = [styles.webView, style];
     return (
       <ScrollView
         ref={this.scrollview}
         contentInset={contentInset}
         contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
         decelerationRate={decelerationRate}
-        contentContainerStyle={containerStyle}
+        contentContainerStyle={styles.webViewWrapper}
         overScrollMode={overScrollMode as any}
         scrollEnabled={scrollEnabled}
         directionalLockEnabled={directionalLockEnabled}
-        style={style}>
+        style={webViewContainerStyle}>
         <DOMBackend
           javaScriptEnabled={javaScriptEnabled}
           injectedJavaScript={injectedJavaScript}
@@ -122,6 +164,7 @@ export class Skeletton<
             injectedJavaScriptBeforeContentLoaded
           }
           source={source}
+          style={webViewStyle}
           userAgent={userAgent}
           ref={this.backend}
           onHttpError={onHttpError}
