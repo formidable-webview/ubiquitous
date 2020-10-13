@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build:ersatz": "yarn workspace @formidable-webview/ersatz build",
+    "build:web": "yarn workspace @formidable-webview/web build",
     "build:ersatz-testing": "yarn workspace @formidable-webview/ersatz-testing build",
     "build:skeletton": "yarn workspace @formidable-webview/skeletton build",
     "test:ersatz": "yarn workspace @formidable-webview/ersatz test",
@@ -40,7 +41,10 @@
   },
   "resolutions": {
     "@release-it/conventional-changelog": "patch:@release-it/conventional-changelog@2.0.0#patches/@release-it-conventional-changelog.patch",
-    "release-it": "patch:release-it@14.0.4#patches/release-it.patch"
+    "release-it": "patch:release-it@14.0.4#patches/release-it.patch",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz"
   },
   "commitlint": {
     "extends": [
