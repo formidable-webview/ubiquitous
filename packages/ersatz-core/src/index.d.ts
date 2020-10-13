@@ -19,6 +19,7 @@ export type DOMBackendProps = Pick<
   | 'javaScriptEnabled'
   | 'userAgent'
   | 'source'
+  | 'style'
 > & {
   domHandlers: DOMBackendHandlers;
   renderLoading?: () => ReactElement;
