@@ -1,6 +1,11 @@
-import React from 'react';
+import React, {
+  createRef,
+  forwardRef,
+  PureComponent,
+  Ref,
+  useMemo
+} from 'react';
 import { WebViewProps } from 'react-native-webview';
-import { PureComponent, createRef } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import {
   DOMBackendHandle,
@@ -15,28 +20,6 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden'
   },
-  loadingOrErrorView: {
-    position: 'absolute',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    width: '100%',
-    backgroundColor: 'white'
-  },
-  loadingProgressBar: {
-    height: 20
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 2
-  },
-  errorTextTitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    marginBottom: 10
-  },
   webView: {
     flex: 0,
     height: '100%',
@@ -50,6 +33,69 @@ const styles = StyleSheet.create({
   }
 });
 
+export interface SkelettonProps extends WebViewProps {
+  DOMBackend: DOMBackendComponent;
+}
+
+const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
+  function BackendRenderer(props: SkelettonProps, ref: Ref<DOMBackendHandle>) {
+    const {
+      DOMBackend,
+      injectedJavaScript,
+      injectedJavaScriptBeforeContentLoaded,
+      javaScriptEnabled,
+      onError,
+      onHttpError,
+      onLoad,
+      onLoadEnd,
+      onLoadProgress,
+      onLoadStart,
+      onMessage,
+      onNavigationStateChange,
+      renderLoading,
+      source,
+      style,
+      userAgent
+    } = props;
+    const webViewStyle = [styles.webView, style];
+    const domHandlers = useMemo(
+      () => ({
+        onMessage,
+        onLoadStart,
+        onLoad,
+        onLoadEnd,
+        onLoadProgress,
+        onNavigationStateChange,
+        onError
+      }),
+      [
+        onError,
+        onLoad,
+        onLoadEnd,
+        onLoadProgress,
+        onLoadStart,
+        onMessage,
+        onNavigationStateChange
+      ]
+    );
+    return (
+      <DOMBackend
+        javaScriptEnabled={javaScriptEnabled}
+        injectedJavaScript={injectedJavaScript}
+        injectedJavaScriptBeforeContentLoaded={
+          injectedJavaScriptBeforeContentLoaded
+        }
+        source={source}
+        style={webViewStyle}
+        userAgent={userAgent}
+        ref={ref}
+        onHttpError={onHttpError}
+        renderLoading={renderLoading}
+        domHandlers={domHandlers}
+      />
+    );
+  }
+);
 export class Skeletton<
     D extends DocumentShape = DocumentShape,
     W extends WindowShape = WindowShape
@@ -125,27 +171,10 @@ export class Skeletton<
       contentInsetAdjustmentBehavior,
       decelerationRate,
       directionalLockEnabled,
-      DOMBackend,
-      injectedJavaScript,
-      injectedJavaScriptBeforeContentLoaded,
-      javaScriptEnabled,
-      onError,
-      onHttpError,
-      onLoad,
-      onLoadEnd,
-      onLoadProgress,
-      onLoadStart,
-      onMessage,
-      onNavigationStateChange,
       overScrollMode,
-      renderLoading,
-      scrollEnabled,
-      source,
-      style,
-      userAgent
+      scrollEnabled
     } = this.props;
     const webViewContainerStyle = [styles.container, containerStyle];
-    const webViewStyle = [styles.webView, style];
     return (
       <ScrollView
         ref={this.scrollview}
@@ -156,30 +185,14 @@ export class Skeletton<
         overScrollMode={overScrollMode as any}
         scrollEnabled={scrollEnabled}
         directionalLockEnabled={directionalLockEnabled}
+        testID="skeletton"
         style={webViewContainerStyle}>
-        <DOMBackend
-          javaScriptEnabled={javaScriptEnabled}
-          injectedJavaScript={injectedJavaScript}
-          injectedJavaScriptBeforeContentLoaded={
-            injectedJavaScriptBeforeContentLoaded
-          }
-          source={source}
-          style={webViewStyle}
-          userAgent={userAgent}
-          ref={this.backend}
-          onHttpError={onHttpError}
-          renderLoading={renderLoading}
-          domHandlers={{
-            onMessage,
-            onLoadStart,
-            onLoad,
-            onLoadEnd,
-            onLoadProgress,
-            onNavigationStateChange,
-            onError
-          }}
-        />
+        <BackendRenderer ref={this.backend} {...this.props} />
       </ScrollView>
     );
   }
 }
+
+Skeletton.defaultProps = {
+  javaScriptEnabled: true
+};
