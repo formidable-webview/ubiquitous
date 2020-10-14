@@ -187,7 +187,7 @@ describe('WebView component', () => {
         render(<Ersatz source={{ html: '<div></div>' }} />)
       );
       ersatz.injectJavaScript('window.awesomeProp = 1;');
-      expect(ersatz.getWindow().awesomeProp).toEqual(1);
+      expect(ersatz.getWindow()!.awesomeProp).toEqual(1);
     });
   });
   describe('regarding renderer props', () => {
@@ -349,16 +349,15 @@ describe('WebView component', () => {
         .get('/500')
         .reply(500, 'Internal server error', { 'Content-Type': 'text/plain' });
       const onHttpError = jest.fn();
-      await waitForErsatz(
-        render(
-          <Ersatz
-            onHttpError={onHttpError}
-            source={{
-              uri: 'https://foo.bar/500'
-            }}
-          />
-        )
+      const { findByTestId } = render(
+        <Ersatz
+          onHttpError={onHttpError}
+          source={{
+            uri: 'https://foo.bar/500'
+          }}
+        />
       );
+      await findByTestId('ersatz-error');
       expect(onHttpError).toHaveBeenCalledTimes(1);
     });
   });

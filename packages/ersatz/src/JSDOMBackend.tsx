@@ -10,21 +10,33 @@ import { JSDOMDOMEngine } from './JSDOMEngine';
 export const JSDOMBackend: DOMBackendFunctionComponent = forwardRef<
   DOMBackendHandle,
   DOMBackendProps
->(({ renderLoading, onHttpError, source, ...props }: DOMBackendProps, ref) => {
-  const renderBackend = React.useCallback(
-    (normalizedSource) => (
-      <JSDOMDOMEngine ref={ref} {...normalizedSource} {...props} />
-    ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [...Object.values(props)]
-  );
-  return (
-    <SourceLoader
-      children={renderBackend}
-      renderLoading={renderLoading}
-      onHttpError={onHttpError}
-      source={source}
-      cancelled={false}
-    />
-  );
-});
+>(
+  (
+    {
+      renderLoading,
+      renderError,
+      onHttpError,
+      source,
+      ...props
+    }: DOMBackendProps,
+    ref
+  ) => {
+    const renderBackend = React.useCallback(
+      (normalizedSource) => (
+        <JSDOMDOMEngine ref={ref} {...normalizedSource} {...props} />
+      ),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [...Object.values(props)]
+    );
+    return (
+      <SourceLoader
+        children={renderBackend}
+        renderLoading={renderLoading}
+        renderError={renderError}
+        onHttpError={onHttpError}
+        source={source}
+        cancelled={false}
+      />
+    );
+  }
+);

@@ -7,11 +7,7 @@ import { JSDOMBackend } from './JSDOMBackend';
 export const Ersatz = forwardRef<DOMBackendHandle, WebViewProps>(
   function Ersatz(props, ref) {
     return (
-      <Skeletton
-        ref={ref as Ref<Skeletton>}
-        {...props}
-        DOMBackend={JSDOMBackend}
-      />
+      <Skeletton ref={ref as Ref<any>} {...props} DOMBackend={JSDOMBackend} />
     );
   }
 );
