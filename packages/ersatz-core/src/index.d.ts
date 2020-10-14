@@ -20,9 +20,11 @@ export type DOMBackendProps = Pick<
   | 'userAgent'
   | 'source'
   | 'style'
+  | 'onLayout'
 > & {
   domHandlers: DOMBackendHandlers;
   renderLoading?: () => ReactElement;
+  renderError?: (reason: string) => ReactElement;
   onHttpError?: (event: WebViewHttpErrorEvent) => void;
 };
 
@@ -48,8 +50,8 @@ export type DOMBackendHandle<
   | 'injectJavaScript'
   | 'requestFocus'
 > & {
-  getDocument(): D;
-  getWindow(): W;
+  getDocument(): D | null;
+  getWindow(): W | null;
 };
 
 export interface ComponentInstanceWithRef<H, P> extends Component<P, any>, H {}
