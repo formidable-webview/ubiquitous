@@ -33,7 +33,8 @@
   },
   "dependencies": {
     "@formidable-webview/ersatz-core": "workspace:*",
-    "@formidable-webview/skeletton": "workspace:*"
+    "@formidable-webview/skeletton": "workspace:*",
+    "escape-string-regexp": "^4.0.0"
   },
   "peerDependencies": {
     "react": "*",

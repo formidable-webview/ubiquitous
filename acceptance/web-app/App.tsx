@@ -11,6 +11,7 @@ const Stack = createStackNavigator();
 
 function makeHTMPageOf(body: string) {
   return {
+    baseUrl: 'https://reactnative.dev/',
     html: `
   <!doctype html>
   <html lang="en" dir="ltr">
@@ -30,15 +31,16 @@ function makeHTMPageOf(body: string) {
   };
 }
 
+const redBoxHtml =
+  '<div style="height:300px;background-color:red;color: black;display:flex;align-items:center;justify-content:center;"><a href="/docs/linking">Relative link resolved with baseUrl</a></div>';
+
 const width = Math.min(Dimensions.get('window').width, 880);
 const examples: VisualTestProps[] = [
   {
     title: 'HTML in ScrollView',
     description:
       'The WebView should be comprised of a red box inside of a yellow box. It should have a height and width of 320. There should be a text node right after the WebView.',
-    source: makeHTMPageOf(
-      '<div style="height:300px;background-color:red;color: black;"></div>'
-    ),
+    source: makeHTMPageOf(redBoxHtml),
     webViewStyle: {
       height: 320,
       width: 320
@@ -49,9 +51,7 @@ const examples: VisualTestProps[] = [
     title: 'HTML in View',
     description:
       'The WebView should be comprised of a red box inside of a yellow box. The red box should be a square with height and width of 300. The yellow box (the body) should span through all the remaining space before the bottom text node.',
-    source: makeHTMPageOf(
-      '<div style="height:300px;background-color:red;color: black;"></div>'
-    ),
+    source: makeHTMPageOf(redBoxHtml),
     webViewStyle: {
       height: 320,
       width: 320
@@ -61,10 +61,8 @@ const examples: VisualTestProps[] = [
   {
     title: 'HTML in View with no width',
     description:
-      'The WebView should not be invisible, though occupying all the space available between the two text nodes.',
-    source: makeHTMPageOf(
-      '<div style="height:300px;background-color:red;color: black;"></div>'
-    ),
+      'The WebView should be tangible while invisible, occupying all the space available between the two text nodes.',
+    source: makeHTMPageOf(redBoxHtml),
     webViewStyle: {
       height: 320
     },
@@ -74,9 +72,7 @@ const examples: VisualTestProps[] = [
     title: 'HTML in View with width only',
     description:
       'The WebView should expand to all the space available between the two text nodes.',
-    source: makeHTMPageOf(
-      '<div style="height:300px;background-color:red;color: black;"></div>'
-    ),
+    source: makeHTMPageOf(redBoxHtml),
     webViewStyle: {
       width: 320
     },

@@ -10,6 +10,7 @@ import {
   View
 } from 'react-native';
 import WebView from 'react-native-webview';
+// import WebView from 'react-native-web-webview';
 import { WebViewSource } from 'react-native-webview/lib/WebViewTypes';
 
 const styles = StyleSheet.create({
@@ -114,7 +115,17 @@ export const VisualTest = ({
           style={webViewStyle}
           containerStyle={containerStyle}
           source={source}
+          originWhitelist={[]}
+          onNavigationStateChange={(state) =>
+            console.info('Navigation State Change', state)
+          }
           injectedJavaScript={script}
+          renderError={(domain) => (
+            <View>
+              <Text>An error occurred while loading the WebView!</Text>
+              <Text>{domain}</Text>
+            </View>
+          )}
           onMessage={({ nativeEvent: { data } }) =>
             setHasMessage(data === 'Hello world!')
           }

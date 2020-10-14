@@ -1,18 +1,41 @@
 = Iframe Security Considerations
 
+Under the hood, this library uses https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe[`<iframe>`] to render remote resources and mimick the `WebView` component. This comes with limitations you should be aware of.
+
+== Same Origin Policy
+
+Because of the same origin policy, `iframes` will be rendered in a restricted environment *when the origin of the WebView doesn't match the origin of the current page*.
+In such restricted environments, the current page will not have access to the content of the cross origin page, and thus the following features will be affected:
+
+- JavaScript injection will be disabled;
+- Messaging will be disabled;
+- History will not register navigation events _from_ cross origins, but can still register events _towards_ cross origins;
+
+If you are in control of the cross origin, you can however set an explicit domain in containing and contained resources to work around this issue:
+
+```js
+document.domain = "company.com";
+```
+
+https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#Changing_origin[Read more about this on MDN].
+
+== IFrame Attributes
+
 X attributes address security issues in iframes:
 
 - `allow`
 - `csp`
 - `referrerpolicy`
-- `sanbox`
+- `sandbox`
 
 == CORS
 
+=== Content Security Policy
 
-=== X-Frame-Options
+If you are using CSP directives, you should make sure the domain rendered in the `WebView` is whitelisted. For example, the most specific directive for embedding youtube player would be:
 
-https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options SAMEORIGIN
-https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
-https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
-x-content-type-options nosniff
+```
+Content-Security-Policy: frame-src https://*.youtube.com;
+```
+
+If no `frame-src` directives is set, user agents will fallback to, by order of preference, `child-src` and `default-src` directives. https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src[Read more on MDN].
