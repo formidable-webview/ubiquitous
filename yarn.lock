@@ -2217,6 +2217,7 @@ __metadata:
     "@types/react-native": ^0.63.25
     "@types/react-test-renderer": ^16.9.3
     babel-jest: ^26.5.2
+    escape-string-regexp: ^4.0.0
     eslint: ^7.10.0
     jest: ^26.5.2
     metro-react-native-babel-preset: ^0.63.0
@@ -16086,7 +16087,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.5.0":
+"qs@npm:^6.5.0, qs@npm:^6.5.1":
   version: 6.9.4
   resolution: "qs@npm:6.9.4"
   checksum: beba62d1e1c66e9888cc08a488eb95771c252a92289a96bff4b767a49e4e7afe9487d7ee3269b856292d8281b855ac5eac927c2e77f845e407ee4fe54743fea7
@@ -16313,6 +16314,18 @@ fsevents@^1.2.7:
     react: "*"
     react-native: "*"
   checksum: 8651488fdf94f92c396da18ac4d4f732bf58d990e7e800ceb0b8d21c64c14612b9d5da1b7f858cc4a58be0081f00bde5f8adc5c9e180e502c919ae25dd7dd7b2
+  languageName: node
+  linkType: hard
+
+"react-native-web-webview@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "react-native-web-webview@npm:1.0.2"
+  dependencies:
+    qs: ^6.5.1
+  peerDependencies:
+    file-loader: "*"
+    react-native-web: "*"
+  checksum: 4fd97f551ab30b97545dd9435381aebadca490b6254ac4927ddfc54c3349c75d621f4eff962791a0d7dd4d4a622506e847006da3ee8fa2839f0516a4feb96059
   languageName: node
   linkType: hard
 
@@ -19599,6 +19612,7 @@ release-it@14.0.4:
     react-native-safe-area-context: 3.1.4
     react-native-screens: ~2.10.1
     react-native-web: ~0.13.7
+    react-native-web-webview: ^1.0.2
     react-native-webview: 10.7.0
     typescript: ~3.9.5
   languageName: unknown
