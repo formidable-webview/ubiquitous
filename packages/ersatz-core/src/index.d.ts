@@ -3,13 +3,14 @@ import type { default as WebView, WebViewProps } from 'react-native-webview';
 
 export type DOMBackendHandlers = Pick<
   WebViewProps,
-  | 'onMessage'
-  | 'onLoadStart'
+  | 'onError'
   | 'onLoad'
   | 'onLoadEnd'
   | 'onLoadProgress'
+  | 'onLoadStart'
+  | 'onMessage'
   | 'onNavigationStateChange'
-  | 'onError'
+  | 'onShouldStartLoadWithRequest'
 >;
 
 export type DOMBackendProps = Pick<
@@ -17,15 +18,16 @@ export type DOMBackendProps = Pick<
   | 'injectedJavaScript'
   | 'injectedJavaScriptBeforeContentLoaded'
   | 'javaScriptEnabled'
-  | 'userAgent'
+  | 'onHttpError'
+  | 'onLayout'
+  | 'renderError'
+  | 'renderLoading'
   | 'source'
   | 'style'
-  | 'onLayout'
+  | 'userAgent'
+  | 'originWhitelist'
 > & {
   domHandlers: DOMBackendHandlers;
-  renderLoading?: () => ReactElement;
-  renderError?: (reason: string) => ReactElement;
-  onHttpError?: (event: WebViewHttpErrorEvent) => void;
 };
 
 export type DOMBackendState = 'loading' | 'loaded';
@@ -43,12 +45,12 @@ export type DOMBackendHandle<
   W extends WindowShape = WindowShape
 > = Pick<
   WebView,
-  | 'reload'
-  | 'stopLoading'
   | 'goBack'
   | 'goForward'
   | 'injectJavaScript'
+  | 'reload'
   | 'requestFocus'
+  | 'stopLoading'
 > & {
   getDocument(): D | null;
   getWindow(): W | null;
