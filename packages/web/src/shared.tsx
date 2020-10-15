@@ -1,8 +1,8 @@
 import escapeStringRegexp from 'escape-string-regexp';
 import React from 'react';
-import { Linking, View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator, Text } from 'react-native';
 import {
-  WebViewNavigationEvent,
+  ShouldStartLoadRequest,
   OnShouldStartLoadWithRequest
 } from 'react-native-webview/lib/WebViewTypes';
 import styles from './styles';
@@ -28,36 +28,20 @@ const compileWhitelist = (
   ['about:blank', ...(originWhitelist || [])].map(originWhitelistToRegex);
 
 const createOnShouldStartLoadWithRequest = (
-  loadRequest: (
-    shouldStart: boolean,
-    url: string,
-    lockIdentifier: number
-  ) => void,
   originWhitelist: readonly string[],
   onShouldStartLoadWithRequest?: OnShouldStartLoadWithRequest
 ) => {
-  return ({ nativeEvent }: WebViewNavigationEvent) => {
+  return (event: ShouldStartLoadRequest) => {
     let shouldStart = true;
-    const { url, lockIdentifier } = nativeEvent;
-
+    const { url } = event;
     if (!passesWhitelist(compileWhitelist(originWhitelist), url)) {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (supported) {
-            return Linking.openURL(url);
-          }
-          console.warn(`Can't open url: ${url}`);
-          return undefined;
-        })
-        .catch((e) => {
-          console.warn('Error opening URL: ', e);
-        });
+      window.open(url, '_blank');
       shouldStart = false;
     } else if (onShouldStartLoadWithRequest) {
-      shouldStart = onShouldStartLoadWithRequest(nativeEvent as any);
+      shouldStart = onShouldStartLoadWithRequest(event);
     }
 
-    loadRequest(shouldStart, url, lockIdentifier);
+    return shouldStart;
   };
 };
 

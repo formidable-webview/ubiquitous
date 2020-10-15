@@ -9,7 +9,7 @@ import {
   Text,
   View
 } from 'react-native';
-import WebView from 'react-native-webview';
+import WebView, { WebViewProps } from 'react-native-webview';
 // import WebView from 'react-native-web-webview';
 import { WebViewSource } from 'react-native-webview/lib/WebViewTypes';
 
@@ -20,8 +20,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    flexShrink: 0,
-    backgroundColor: '#fff'
+    flexShrink: 0
   },
   testBox: {
     padding: 10,
@@ -59,6 +58,7 @@ export interface VisualTestProps {
   description: string;
   title: string;
   containerStyle?: StyleProp<ViewStyle>;
+  extraProps?: WebViewProps;
 }
 
 const script = `
@@ -71,7 +71,8 @@ export const VisualTest = ({
   source,
   scrollView,
   description,
-  title
+  title,
+  extraProps
 }: VisualTestProps) => {
   const [hasMessage, setHasMessage] = useState(false);
   const Wrapper = useMemo(
@@ -93,7 +94,7 @@ export const VisualTest = ({
     [scrollView]
   );
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#9c9c9c' }}>
       <Wrapper>
         <View
           style={[
@@ -120,15 +121,10 @@ export const VisualTest = ({
             console.info('Navigation State Change', state)
           }
           injectedJavaScript={script}
-          renderError={(domain) => (
-            <View>
-              <Text>An error occurred while loading the WebView!</Text>
-              <Text>{domain}</Text>
-            </View>
-          )}
           onMessage={({ nativeEvent: { data } }) =>
             setHasMessage(data === 'Hello world!')
           }
+          {...extraProps}
         />
         <Text>Text after WebView!</Text>
       </Wrapper>

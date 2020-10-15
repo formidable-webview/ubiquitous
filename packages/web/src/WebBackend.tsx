@@ -23,7 +23,11 @@ import type {
   DOMBackendHandle,
   DOMBackendProps
 } from '@formidable-webview/ersatz-core';
-import { defaultRenderLoading } from './shared';
+import {
+  createOnShouldStartLoadWithRequest,
+  defaultRenderError,
+  defaultRenderLoading
+} from './shared';
 import {
   WebViewSourceHtml,
   WebViewSourceUri,
@@ -61,7 +65,7 @@ function useBackendHandle(
   iframeRef: RefObject<HTMLIFrameElement>,
   navigator: Navigator
 ) {
-  return React.useMemo<DOMBackendHandle>(
+  return React.useMemo<DOMBackendHandle<Document, Window>>(
     () => ({
       getDocument() {
         return iframeRef.current?.contentDocument as Document;
@@ -101,7 +105,10 @@ function useBackendHandle(
   );
 }
 
-function injectBaseElement(document: Document, baseUrl: string) {
+function injectBaseElement(document: Document | null, baseUrl: string) {
+  if (!document) {
+    return;
+  }
   const head =
     document.getElementsByTagName('head')[0] ||
     (() => {
@@ -123,7 +130,7 @@ interface Navigation {
   current: number;
   history: Array<WebViewSource>;
   instanceId: number;
-  syncState: 'init' | 'loading' | 'loaded';
+  syncState: 'init' | 'loading' | 'loaded' | 'error';
 }
 
 interface Navigator {
@@ -134,10 +141,16 @@ interface Navigator {
   goForward(): void;
 }
 
+function canGoBack(state: Navigation) {
+  return state.current > 0;
+}
+
+function canGoForward(state: Navigation) {
+  return state.current < state.history.length - 1;
+}
+
 function useNavigation(source: WebViewSource | undefined) {
-  const [{ history, current, instanceId, syncState }, setState] = useState<
-    Navigation
-  >({
+  const [navState, setState] = useState<Navigation>({
     current: 0,
     history: [source || { html: '' }],
     instanceId: 0,
@@ -146,27 +159,33 @@ function useNavigation(source: WebViewSource | undefined) {
   const uri = (source as WebViewSourceUri)?.uri;
   const html = (source as WebViewSourceHtml)?.html;
   const baseUrl = (source as WebViewSourceHtml)?.baseUrl;
-  const selectedSource = history[current];
+  const selectedSource = navState.history[navState.current];
   const histUri = (selectedSource as WebViewSourceUri)?.uri;
   const histBaseUrl = (selectedSource as WebViewSourceHtml)?.baseUrl;
   const histHtml = (selectedSource as WebViewSourceHtml)?.html;
   const setSyncState = useCallback(
-    (sstate: Navigation['syncState']) =>
+    (nxstate: Navigation['syncState']) =>
       setState((st) => {
         const nextAllowedState =
-          (st.syncState === 'init' && sstate === 'loading') ||
-          (st.syncState === 'loading' && sstate === 'loaded') ||
-          (st.syncState === 'loaded' && sstate === 'init')
-            ? sstate
+          (st.syncState === 'init' && nxstate === 'loading') ||
+          (st.syncState === 'loading' && nxstate === 'loaded') ||
+          (st.syncState === 'loading' && nxstate === 'error') ||
+          (st.syncState === 'loaded' && nxstate === 'init') ||
+          (st.syncState === 'loaded' && nxstate === 'error') || // For chrome
+          (st.syncState === 'error' && nxstate === 'init')
+            ? nxstate
             : st.syncState;
-        return { ...st, syncState: nextAllowedState };
+
+        return nextAllowedState !== st.syncState
+          ? { ...st, syncState: nextAllowedState }
+          : st;
       }),
     []
   );
+  const flagHasError = useCallback(() => setSyncState('error'), [setSyncState]);
   const navigator = useMemo<Navigator>(
     () => ({
       reset() {
-        console.info('RESETTING NAV');
         setState((st) => ({
           ...st,
           instanceId: st.instanceId + 1,
@@ -191,18 +210,28 @@ function useNavigation(source: WebViewSource | undefined) {
         }));
       },
       goBack() {
-        setState((st) => ({
-          ...st,
-          current: st.current - 1,
-          syncState: 'init'
-        }));
+        setState((st) => {
+          if (canGoBack(st)) {
+            return {
+              ...st,
+              current: st.current - 1,
+              syncState: 'init'
+            };
+          }
+          return st;
+        });
       },
       goForward() {
-        setState((st) => ({
-          ...st,
-          current: st.current + 1,
-          syncState: 'init'
-        }));
+        setState((st) => {
+          if (canGoForward(st)) {
+            return {
+              ...st,
+              current: st.current + 1,
+              syncState: 'init'
+            };
+          }
+          return st;
+        });
       }
     }),
     [uri, html, baseUrl]
@@ -212,29 +241,24 @@ function useNavigation(source: WebViewSource | undefined) {
   // }, [navigator]);
   return useMemo(
     () => ({
-      instanceId,
+      instanceId: navState.instanceId,
       uri: histUri,
       baseUrl: histBaseUrl,
       html: histHtml,
       navigator,
-      syncState,
+      syncState: navState.syncState,
       setSyncState,
-      canGoBack() {
-        return current > 0;
-      },
-      canGoForwards() {
-        return current < history.length - 1;
-      }
+      flagHasError,
+      canGoBack: canGoBack.bind(null, navState),
+      canGoForward: canGoForward.bind(null, navState)
     }),
     [
-      syncState,
+      navState,
       setSyncState,
-      instanceId,
-      current,
+      flagHasError,
       histBaseUrl,
       histHtml,
       histUri,
-      history,
       navigator
     ]
   );
@@ -244,12 +268,14 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
   (
     {
       renderLoading,
+      renderError,
       onLayout,
       domHandlers,
       // onHttpError,
       javaScriptEnabled,
       injectedJavaScript,
       injectedJavaScriptBeforeContentLoaded,
+      originWhitelist,
       // userAgent,
       style,
       source
@@ -260,13 +286,14 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
     const frameId = useRef(globalFrameId++).current;
     const { width, height, wrapperHeight } = normalizeDimensions(style);
     const {
-      navigator,
-      uri,
-      html,
       baseUrl,
+      flagHasError,
+      html,
       instanceId,
+      navigator,
+      setSyncState,
       syncState,
-      setSyncState
+      uri
     } = useNavigation(source);
     const ownerOrigin = document.location.origin;
     const eventBase = React.useMemo(
@@ -277,6 +304,25 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
       [uri]
     );
     const backendHandle = useBackendHandle(iframeRef, navigator);
+    const handleOnLoadEnd = useCallback(
+      function handleLoadEnd() {
+        injectedJavaScript &&
+          backendHandle.injectJavaScript(injectedJavaScript);
+        webViewLifecycle.handleLoadEnd(domHandlers, eventBase);
+        if (baseUrl) {
+          injectBaseElement(backendHandle.getDocument(), baseUrl);
+        }
+        setSyncState('loaded');
+      },
+      [
+        backendHandle,
+        baseUrl,
+        domHandlers,
+        eventBase,
+        injectedJavaScript,
+        setSyncState
+      ]
+    );
     const iframeProps: JSX.IntrinsicElements['iframe'] & {
       allowpaymentrequest: string;
     } = {
@@ -292,13 +338,38 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
       allowpaymentrequest: 'true',
       sandbox: `allow-same-origin ${
         javaScriptEnabled ? 'allow-scripts' : ''
-      } allow-popups allow-forms`
+      } allow-popups allow-forms`,
+      onLoad: handleOnLoadEnd
     };
+    const onShouldStartLoadWithRequest = useMemo(() => {
+      return createOnShouldStartLoadWithRequest(
+        originWhitelist as string[],
+        domHandlers.onShouldStartLoadWithRequest
+      );
+    }, [originWhitelist, domHandlers.onShouldStartLoadWithRequest]);
 
     useEffect(
       function initEffect() {
         setSyncState('loading');
         webViewLifecycle.handleLoadStart(domHandlers, eventBase);
+        function handleBeforeUnload() {
+          if (
+            ifwindow?.document.activeElement &&
+            ifwindow?.document.activeElement.hasAttribute('href')
+          ) {
+            // @ts-ignore
+            const targetUrl = ifwindow.document.activeElement?.href as string;
+            if (
+              targetUrl &&
+              !webViewLifecycle.shouldStartLoadEvent(
+                onShouldStartLoadWithRequest,
+                targetUrl
+              )
+            ) {
+              navigator.reset();
+            }
+          }
+        }
         const ifwindow = backendHandle.getWindow() as Window & {
           ReactNativeWebView: any;
         };
@@ -308,52 +379,55 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
               ifwindow.parent.postMessage({ message, frameId }, ownerOrigin);
             }
           };
-          if (baseUrl) {
-            injectBaseElement(ifwindow.document, baseUrl);
-          }
-          ifwindow.addEventListener('beforeunload', () => {
-            navigator.reset();
-          });
         }
+        ifwindow?.addEventListener('beforeunload', handleBeforeUnload);
         if (injectedJavaScriptBeforeContentLoaded) {
           backendHandle.injectJavaScript(injectedJavaScriptBeforeContentLoaded);
         }
+        return () => {
+          try {
+            ifwindow?.removeEventListener('beforeunload', handleBeforeUnload);
+          } catch (e) {}
+        };
       },
       [
-        navigator,
-        setSyncState,
         backendHandle,
+        baseUrl,
         domHandlers,
         eventBase,
         frameId,
-        ownerOrigin,
         injectedJavaScriptBeforeContentLoaded,
-        baseUrl,
-        instanceId
+        instanceId,
+        navigator,
+        onShouldStartLoadWithRequest,
+        ownerOrigin,
+        setSyncState,
+        flagHasError
       ]
     );
-    useEffect(() => {
-      function handleLoadEnd() {
-        injectedJavaScript &&
-          backendHandle.injectJavaScript(injectedJavaScript);
-        webViewLifecycle.handleLoadEnd(domHandlers, eventBase);
-        setSyncState('loaded');
-      }
-      const iframe = iframeRef.current;
-      iframe?.addEventListener('load', handleLoadEnd);
-      return () => {
-        iframe?.removeEventListener('load', handleLoadEnd);
-      };
-    }, [
-      setSyncState,
-      injectedJavaScript,
-      backendHandle,
-      eventBase,
-      frameId,
-      domHandlers,
-      ownerOrigin,
-      instanceId
-    ]);
+    useEffect(
+      function mockError() {
+        let isCancelled = false;
+        if (renderError && uri) {
+          const headers = new Headers({
+            Accept: '*/*'
+          });
+          fetch(uri, {
+            method: 'HEAD',
+            headers: headers,
+            mode: 'no-cors'
+          }).catch(() => {
+            if (!isCancelled) {
+              flagHasError();
+            }
+          });
+        }
+        return () => {
+          isCancelled = true;
+        };
+      },
+      [renderError, flagHasError, uri]
+    );
     useEffect(
       function messageEffect() {
         function handleMessage({ data, origin }: MessageEvent) {
@@ -384,6 +458,9 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
           styles.container
         ]}>
         {iframe}
+        {syncState === 'error'
+          ? renderError!(undefined, 0, 'The iframe failed to load.')
+          : null}
         {syncState === 'loading' ? renderLoading!() : null}
       </View>
     );
@@ -391,7 +468,9 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
 );
 
 WebBackend.defaultProps = {
-  renderLoading: defaultRenderLoading
+  renderLoading: defaultRenderLoading,
+  renderError: defaultRenderError,
+  originWhitelist: ['*']
 };
 
 const styles = StyleSheet.create({
@@ -403,6 +482,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexBasis: 'auto',
+    position: 'relative',
     flex: 1
   }
 });

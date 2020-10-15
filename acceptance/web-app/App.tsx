@@ -1,7 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import 'react-native-gesture-handler';
 import Constants from 'expo-constants';
 import React from 'react';
-import { Button, Dimensions, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { VisualTest, VisualTestProps } from './src/VisualTest';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -22,7 +23,7 @@ function makeHTMPageOf(body: string) {
   <style>
   body {
     margin: 10px;
-    background-color: yellow;
+    background-color: blue;
   }
   </style>
   <body>${body}</body>
@@ -31,16 +32,36 @@ function makeHTMPageOf(body: string) {
   };
 }
 
-const redBoxHtml =
-  '<div style="height:300px;background-color:red;color: black;display:flex;align-items:center;justify-content:center;"><a href="/docs/linking">Relative link resolved with baseUrl</a></div>';
+const boxHtml =
+  '<div style="height:300px;background-color:white;color: black;display:flex;align-items:center;justify-content:center;"><a href="/docs/linking">Relative link resolved with baseUrl</a></div>';
 
 const width = Math.min(Dimensions.get('window').width, 880);
+
+const renderError = () => (
+  <View
+    style={[
+      {
+        position: 'absolute',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        width: '100%',
+        backgroundColor: 'red'
+      }
+    ]}>
+    <Text style={{ fontWeight: 'bold', color: 'black' }}>
+      The content of this page could not be fetched!
+    </Text>
+  </View>
+);
+
 const examples: VisualTestProps[] = [
   {
     title: 'HTML in ScrollView',
     description:
-      'The WebView should be comprised of a red box inside of a yellow box. It should have a height and width of 320. There should be a text node right after the WebView.',
-    source: makeHTMPageOf(redBoxHtml),
+      'The WebView should be comprised of a white box inside of a blue box. It should have a height and width of 320. There should be a text node right after the WebView.',
+    source: makeHTMPageOf(boxHtml),
     webViewStyle: {
       height: 320,
       width: 320
@@ -50,8 +71,8 @@ const examples: VisualTestProps[] = [
   {
     title: 'HTML in View',
     description:
-      'The WebView should be comprised of a red box inside of a yellow box. The red box should be a square with height and width of 300. The yellow box (the body) should span through all the remaining space before the bottom text node.',
-    source: makeHTMPageOf(redBoxHtml),
+      'The WebView should be comprised of a white box inside of a blue box. The white box should be a square with height and width of 300. The blue box (the body) should span through all the remaining space before the bottom text node.',
+    source: makeHTMPageOf(boxHtml),
     webViewStyle: {
       height: 320,
       width: 320
@@ -62,7 +83,7 @@ const examples: VisualTestProps[] = [
     title: 'HTML in View with no width',
     description:
       'The WebView should be tangible while invisible, occupying all the space available between the two text nodes.',
-    source: makeHTMPageOf(redBoxHtml),
+    source: makeHTMPageOf(boxHtml),
     webViewStyle: {
       height: 320
     },
@@ -72,11 +93,25 @@ const examples: VisualTestProps[] = [
     title: 'HTML in View with width only',
     description:
       'The WebView should expand to all the space available between the two text nodes.',
-    source: makeHTMPageOf(redBoxHtml),
+    source: makeHTMPageOf(boxHtml),
     webViewStyle: {
       width: 320
     },
     scrollView: false
+  },
+  {
+    title: 'Unreachable host',
+    description:
+      'The result of renderError should be displayed while occupying the size provided through style.',
+    source: { uri: 'http://this-resource-does-not-exist.really' },
+    webViewStyle: {
+      width: 320,
+      height: 320
+    },
+    scrollView: true,
+    extraProps: {
+      renderError
+    }
   },
   {
     title: 'Embedded Youtube in ScrollView',
