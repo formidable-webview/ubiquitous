@@ -52,6 +52,9 @@ const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
       onLoadStart,
       onMessage,
       onNavigationStateChange,
+      onShouldStartLoadWithRequest,
+      originWhitelist,
+      renderError,
       renderLoading,
       source,
       style,
@@ -60,13 +63,14 @@ const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
     const webViewStyle = [styles.webView, style];
     const domHandlers = useMemo(
       () => ({
-        onMessage,
-        onLoadStart,
+        onError,
         onLoad,
         onLoadEnd,
         onLoadProgress,
+        onLoadStart,
+        onMessage,
         onNavigationStateChange,
-        onError
+        onShouldStartLoadWithRequest
       }),
       [
         onError,
@@ -75,23 +79,26 @@ const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
         onLoadProgress,
         onLoadStart,
         onMessage,
-        onNavigationStateChange
+        onNavigationStateChange,
+        onShouldStartLoadWithRequest
       ]
     );
     return (
       <DOMBackend
-        javaScriptEnabled={javaScriptEnabled}
+        domHandlers={domHandlers}
         injectedJavaScript={injectedJavaScript}
         injectedJavaScriptBeforeContentLoaded={
           injectedJavaScriptBeforeContentLoaded
         }
+        javaScriptEnabled={javaScriptEnabled}
+        onHttpError={onHttpError}
+        originWhitelist={originWhitelist}
+        ref={ref}
+        renderLoading={renderLoading}
+        renderError={renderError}
         source={source}
         style={webViewStyle}
         userAgent={userAgent}
-        ref={ref}
-        onHttpError={onHttpError}
-        renderLoading={renderLoading}
-        domHandlers={domHandlers}
       />
     );
   }
@@ -172,7 +179,10 @@ export class Skeletton<
       decelerationRate,
       directionalLockEnabled,
       overScrollMode,
-      scrollEnabled
+      scrollEnabled,
+      showsHorizontalScrollIndicator,
+      showsVerticalScrollIndicator,
+      onScroll
     } = this.props;
     const webViewContainerStyle = [styles.container, containerStyle];
     return (
@@ -184,7 +194,10 @@ export class Skeletton<
         contentContainerStyle={styles.webViewWrapper}
         overScrollMode={overScrollMode as any}
         scrollEnabled={scrollEnabled}
+        showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         directionalLockEnabled={directionalLockEnabled}
+        onScroll={onScroll as any}
         testID="skeletton"
         style={webViewContainerStyle}>
         <BackendRenderer ref={this.backend} {...this.props} />

@@ -1,4 +1,6 @@
 import {
+  OnShouldStartLoadWithRequest,
+  ShouldStartLoadRequest,
   WebViewError,
   WebViewHttpErrorEvent,
   WebViewMessageEvent,
@@ -14,37 +16,26 @@ type EventExtended<E extends WebViewNativeEvent> = Omit<
   keyof WebViewNativeEvent
 >;
 
-const dummyFalse = () => false;
-const dummyVoid = () => {};
+function createNavigationEvent<E extends WebViewNativeEvent>({
+  ...other
+}: EventExtended<E> & Partial<WebViewNativeEvent>) {
+  return {
+    canGoBack: false,
+    canGoForward: false,
+    loading: false,
+    lockIdentifier: 1,
+    title: '',
+    url: '',
+    ...other
+  } as E;
+}
 
 function createNativeEvent<E extends WebViewNativeEvent>({
   ...other
 }: EventExtended<E> & Partial<WebViewNativeEvent>): NativeSyntheticEvent<E> {
   return {
-    bubbles: false,
-    cancelable: false,
-    currentTarget: 0,
-    defaultPrevented: false,
-    eventPhase: 0,
-    isDefaultPrevented: dummyFalse,
-    isPropagationStopped: dummyFalse,
-    isTrusted: true,
-    persist: dummyVoid,
-    preventDefault: dummyVoid,
-    stopPropagation: dummyVoid,
-    target: 0,
-    timeStamp: 0,
-    type: '',
-    nativeEvent: {
-      canGoBack: false,
-      canGoForward: false,
-      loading: false,
-      lockIdentifier: 1,
-      title: '',
-      url: '',
-      ...other
-    } as E
-  };
+    nativeEvent: createNavigationEvent(other)
+  } as NativeSyntheticEvent<E>;
 }
 
 export interface EventBase {
@@ -92,6 +83,13 @@ export const eventFactory = {
   },
   createMessageEvent(eventBase: EventBase, data: string): WebViewMessageEvent {
     return createNativeEvent({ ...eventBase, data });
+  },
+  createShouldStartLoadEvent(eventBase: EventBase) {
+    return createNativeEvent<WebViewNavigation>({
+      ...eventBase,
+      loading: false,
+      navigationType: 'other'
+    });
   }
 };
 
@@ -149,5 +147,18 @@ export const webViewLifecycle = {
     }
     typeof onMessage === 'function' &&
       onMessage(eventFactory.createMessageEvent(eventBase, message));
+  },
+  shouldStartLoadEvent(
+    onShouldStartLoadWithRequest: OnShouldStartLoadWithRequest,
+    url: string
+  ) {
+    return onShouldStartLoadWithRequest(
+      createNavigationEvent<ShouldStartLoadRequest>({
+        url: url,
+        title: url,
+        isTopFrame: false,
+        navigationType: 'other'
+      })
+    );
   }
 };
