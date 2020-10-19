@@ -15,9 +15,11 @@ export type DOMBackendHandlers = Pick<
 
 export type DOMBackendProps = Pick<
   WebViewProps,
+  | 'geolocationEnabled'
   | 'injectedJavaScript'
   | 'injectedJavaScriptBeforeContentLoaded'
   | 'javaScriptEnabled'
+  | 'mediaPlaybackRequiresUserAction'
   | 'onHttpError'
   | 'onLayout'
   | 'renderError'
