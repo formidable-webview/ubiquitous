@@ -1,5 +1,4 @@
 import {
-  OnShouldStartLoadWithRequest,
   ShouldStartLoadRequest,
   WebViewError,
   WebViewHttpErrorEvent,
@@ -93,6 +92,12 @@ export const eventFactory = {
   }
 };
 
+export interface ShouldStartLoadResponse {
+  shouldStart: boolean;
+  shouldOpenUrl: boolean;
+  url: string;
+}
+
 export const webViewLifecycle = {
   handleLoadStart(
     { onLoadStart, onNavigationStateChange }: DOMBackendHandlers,
@@ -149,7 +154,9 @@ export const webViewLifecycle = {
       onMessage(eventFactory.createMessageEvent(eventBase, message));
   },
   shouldStartLoadEvent(
-    onShouldStartLoadWithRequest: OnShouldStartLoadWithRequest,
+    onShouldStartLoadWithRequest: (
+      event: ShouldStartLoadRequest
+    ) => ShouldStartLoadResponse,
     url: string
   ) {
     return onShouldStartLoadWithRequest(
