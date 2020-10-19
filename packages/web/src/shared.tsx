@@ -1,5 +1,6 @@
+/// <reference lib="dom" />
 import escapeStringRegexp from 'escape-string-regexp';
-import React from 'react';
+import React, { RefObject } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
 import {
   ShouldStartLoadRequest,
@@ -17,33 +18,71 @@ const extractOrigin = (url: string): string => {
 const originWhitelistToRegex = (originWhitelist: string): string =>
   `^${escapeStringRegexp(originWhitelist).replace(/\\\*/g, '.*')}`;
 
-const passesWhitelist = (compiledWhitelist: readonly string[], url: string) => {
+export const passesWhitelist = (
+  compiledWhitelist: readonly string[],
+  url: string
+) => {
   const origin = extractOrigin(url);
   return compiledWhitelist.some((x) => new RegExp(x).test(origin));
 };
 
-const compileWhitelist = (
+export const compileWhitelist = (
   originWhitelist: readonly string[]
 ): readonly string[] =>
-  ['about:blank', ...(originWhitelist || [])].map(originWhitelistToRegex);
+  ['about:blank', 'about:srcdoc', ...(originWhitelist || [])].map(
+    originWhitelistToRegex
+  );
+
+function browserWillOpenTargetInNewTab(activeElement: HTMLAnchorElement) {
+  const relAttribute = activeElement.getAttribute('rel') || '';
+  return (
+    activeElement.hasAttribute('download') ||
+    ((activeElement.getAttribute('target') === '_blank' ||
+      relAttribute.indexOf('noopener') !== -1) &&
+      !activeElement.hasAttribute('opener'))
+  );
+}
+
+function isActiveElementAnchor(
+  activeElement: null | Element
+): activeElement is HTMLAnchorElement {
+  return !!activeElement && activeElement.tagName.toLowerCase() === 'a';
+}
 
 const createOnShouldStartLoadWithRequest = (
   originWhitelist: readonly string[],
+  iframeRef: RefObject<HTMLIFrameElement>,
   onShouldStartLoadWithRequest?: OnShouldStartLoadWithRequest
 ) => {
   return (event: ShouldStartLoadRequest) => {
     let shouldStart = true;
+    let shouldOpenUrl = false;
     const { url } = event;
+    const localDocument = iframeRef.current?.contentDocument;
     if (!passesWhitelist(compileWhitelist(originWhitelist), url)) {
-      window.open(url, '_blank');
-      shouldStart = false;
+      const activeElement = localDocument?.activeElement || null;
+      if (isActiveElementAnchor(activeElement)) {
+        shouldStart = browserWillOpenTargetInNewTab(activeElement);
+        if (!shouldStart) {
+          shouldOpenUrl = true;
+        }
+      } else {
+        shouldStart = true;
+      }
     } else if (onShouldStartLoadWithRequest) {
       shouldStart = onShouldStartLoadWithRequest(event);
     }
 
-    return shouldStart;
+    return { shouldStart, shouldOpenUrl, url };
   };
 };
+
+export function getEventBase(uri?: string) {
+  return {
+    url: uri ?? 'about:srcdoc',
+    title: uri ?? 'about:srcdoc'
+  };
+}
 
 const defaultRenderLoading = () => (
   <View style={styles.loadingOrErrorView}>

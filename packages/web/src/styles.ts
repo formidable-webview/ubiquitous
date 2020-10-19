@@ -1,15 +1,6 @@
-import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-interface Styles {
-  container: ViewStyle;
-  errorText: TextStyle;
-  errorTextTitle: TextStyle;
-  loadingOrErrorView: ViewStyle;
-  webView: ViewStyle;
-  loadingProgressBar: ViewStyle;
-}
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden'
