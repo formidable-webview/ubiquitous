@@ -1,6 +1,9 @@
 import { webViewLifecycle } from '@formidable-webview/skeletton';
 import { useEffect } from 'react';
-import { createOnShouldStartLoadWithRequest } from '../shared';
+import {
+  createOnShouldStartLoadWithRequest,
+  isActiveElementAnchor
+} from '../shared';
 import { WebBackendState } from '../types';
 
 export function useDOMInitEffect({
@@ -11,7 +14,7 @@ export function useDOMInitEffect({
   iframeRef,
   injectedJavaScriptBeforeContentLoaded,
   instanceId,
-  navigator,
+  loader,
   originWhitelist,
   ownerOrigin,
   setSyncState
@@ -26,23 +29,18 @@ export function useDOMInitEffect({
         domHandlers.onShouldStartLoadWithRequest
       );
       function handleBeforeUnload() {
-        if (
-          ifwindow?.document.activeElement &&
-          ifwindow?.document.activeElement.hasAttribute('href')
-        ) {
-          // @ts-ignore
-          const targetUrl = ifwindow.document.activeElement?.href as string;
-          if (targetUrl) {
-            const {
-              shouldOpenUrl,
-              shouldStart
-            } = webViewLifecycle.shouldStartLoadEvent(
-              onShouldStartLoadWithRequest,
-              targetUrl
-            );
-            if (!shouldStart && !shouldOpenUrl) {
-              navigator.reset();
-            }
+        const activeElement = ifwindow?.document.activeElement;
+        if (isActiveElementAnchor(activeElement)) {
+          const targetUrl = activeElement.href;
+          const {
+            shouldOpenUrl,
+            shouldStart
+          } = webViewLifecycle.shouldStartLoadEvent(
+            onShouldStartLoadWithRequest,
+            targetUrl
+          );
+          if (!shouldStart && !shouldOpenUrl) {
+            loader.reload();
           }
         }
       }
@@ -78,7 +76,7 @@ export function useDOMInitEffect({
       iframeRef,
       injectedJavaScriptBeforeContentLoaded,
       instanceId,
-      navigator,
+      loader,
       originWhitelist,
       ownerOrigin,
       setSyncState

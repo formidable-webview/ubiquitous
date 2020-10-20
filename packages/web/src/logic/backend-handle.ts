@@ -1,21 +1,11 @@
 import { DOMBackendHandle } from '@formidable-webview/ersatz-core';
 import React, { RefObject } from 'react';
-import { Navigator } from '../types';
-
-function printLog(method: string, message: string) {
-  console.warn(`WebBackend#${method}: ${message}`);
-}
-
-function printLimitedContextMsg(method: string) {
-  printLog(
-    method,
-    'This iframe renders a cross origin resource, and thus the execution context is limited. JavaScript injection is not available in such context.'
-  );
-}
+import { printLimitedContextMsg } from '../shared';
+import { PageLoader } from '../types';
 
 export function useBackendHandle(
   iframeRef: RefObject<HTMLIFrameElement>,
-  navigator: Navigator
+  loader: PageLoader
 ) {
   return React.useMemo<DOMBackendHandle<Document, Window>>(
     () => ({
@@ -38,21 +28,21 @@ export function useBackendHandle(
         }
       },
       reload() {
-        navigator.reload();
+        loader.reload();
       },
       requestFocus() {
         iframeRef.current?.focus();
       },
       goBack() {
-        navigator.goBack();
+        loader.goBack();
       },
       goForward() {
-        navigator.goForward();
+        loader.goForward();
       },
       stopLoading() {
-        printLog('stopLoading', 'not Implemented.');
+        loader.stopLoading();
       }
     }),
-    [iframeRef, navigator]
+    [iframeRef, loader]
   );
 }

@@ -17,7 +17,7 @@ import {
   getEventBase
 } from './shared';
 import { WebBackendState } from './types';
-import { useNavigation } from './logic/navigation';
+import { usePageLoader } from './logic/navigation';
 import { useBackendHandle } from './logic/backend-handle';
 import { useOnLoadEnd } from './logic/on-load-end';
 import { useErrorEffect } from './logic/error-effect';
@@ -84,14 +84,14 @@ function buildIframeProps({
 export const WebBackend: DOMBackendFunctionComponent = forwardRef(
   (props: DOMBackendProps & ViewProps, ref) => {
     const { renderLoading, renderError, onLayout, style, source } = props;
-    const navState = useNavigation(source);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const frameId = useRef(globalFrameId++).current;
+    const navState = usePageLoader(source);
+    const { uri, syncState, loader } = navState;
     const { width, height, wrapperHeight } = useNormalizedDimensions(style);
-    const { uri, syncState, navigator } = navState;
     const ownerOrigin = document.location.origin;
     const eventBase = React.useMemo(() => getEventBase(uri), [uri]);
-    const backendHandle = useBackendHandle(iframeRef, navigator);
+    const backendHandle = useBackendHandle(iframeRef, loader);
     const backendState: WebBackendState = {
       ...props,
       ...navState,

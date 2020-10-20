@@ -8,8 +8,6 @@ import {
 } from 'react-native-webview/lib/WebViewTypes';
 import styles from './styles';
 
-const defaultOriginWhitelist = ['http://*', 'https://*'];
-
 const extractOrigin = (url: string): string => {
   const result = /^[A-Za-z][A-Za-z0-9+\-.]+:(\/\/)?[^/]*/.exec(url);
   return result === null ? '' : result[0];
@@ -43,10 +41,10 @@ function browserWillOpenTargetInNewTab(activeElement: HTMLAnchorElement) {
   );
 }
 
-function isActiveElementAnchor(
+export function isActiveElementAnchor(
   activeElement: null | Element
 ): activeElement is HTMLAnchorElement {
-  return !!activeElement && activeElement.tagName.toLowerCase() === 'a';
+  return !!activeElement && activeElement.tagName === 'A';
 }
 
 const createOnShouldStartLoadWithRequest = (
@@ -84,6 +82,17 @@ export function getEventBase(uri?: string) {
   };
 }
 
+export function printLog(method: string, message: string) {
+  __DEV__ && console.warn(`WebBackend#${method}: ${message}`);
+}
+
+export function printLimitedContextMsg(method: string) {
+  printLog(
+    method,
+    'This iframe renders a cross origin resource, and thus the execution context is limited. JavaScript injection is not available in such context.'
+  );
+}
+
 const defaultRenderLoading = () => (
   <View style={styles.loadingOrErrorView}>
     <ActivityIndicator />
@@ -103,7 +112,6 @@ const defaultRenderError = (
 );
 
 export {
-  defaultOriginWhitelist,
   createOnShouldStartLoadWithRequest,
   defaultRenderLoading,
   defaultRenderError

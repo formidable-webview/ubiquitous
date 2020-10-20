@@ -1,49 +1,43 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Navigation, Navigator, NavigationState } from '../types';
+import { Navigation, PageLoader, PageLoadState } from '../types';
 import {
   WebViewSourceHtml,
   WebViewSourceUri,
   WebViewSource
 } from 'react-native-webview/lib/WebViewTypes';
-
-function canGoBack(state: Navigation) {
-  return state.current > 0;
-}
-
-function canGoForward(state: Navigation) {
-  return state.current < state.history.length - 1;
-}
+import { printLog } from '../shared';
 
 function getNextSyncState(
   st: Navigation,
-  requestedSyncSt: Navigation['syncState']
+  requestedState: Navigation['syncState']
 ) {
-  return (st.syncState === 'init' && requestedSyncSt === 'loading') ||
-    (st.syncState === 'loading' && requestedSyncSt === 'loaded') ||
-    (st.syncState === 'loading' && requestedSyncSt === 'error') ||
-    (st.syncState === 'loaded' && requestedSyncSt === 'init') ||
-    (st.syncState === 'loaded' && requestedSyncSt === 'error') || // For chrome
-    (st.syncState === 'error' && requestedSyncSt === 'init')
-    ? requestedSyncSt
+  return (st.syncState === 'init' && requestedState === 'loading') ||
+    (st.syncState === 'loading' && requestedState === 'loaded') ||
+    (st.syncState === 'loading' && requestedState === 'error') ||
+    (st.syncState === 'loaded' && requestedState === 'init') ||
+    (st.syncState === 'loaded' && requestedState === 'error') || // For chrome
+    (st.syncState === 'error' && requestedState === 'init')
+    ? requestedState
     : st.syncState;
 }
 
-export function useNavigation(
+function printUnsupportedOperation(method: string) {
+  printLog(
+    method,
+    'Operation unsupported on Web. Add logic to conditionnaly invoke this method platform-wise.'
+  );
+}
+
+export function usePageLoader(
   source: WebViewSource | undefined
-): NavigationState {
+): PageLoadState {
   const [navState, setState] = useState<Navigation>({
-    current: 0,
-    history: [source || { html: '' }],
     instanceId: 0,
     syncState: 'init'
   });
   const uri = (source as WebViewSourceUri)?.uri;
   const html = (source as WebViewSourceHtml)?.html;
   const baseUrl = (source as WebViewSourceHtml)?.baseUrl;
-  const selectedSource = navState.history[navState.current];
-  const histUri = (selectedSource as WebViewSourceUri)?.uri;
-  const histBaseUrl = (selectedSource as WebViewSourceHtml)?.baseUrl;
-  const histHtml = (selectedSource as WebViewSourceHtml)?.html;
   const setSyncState = useCallback(
     (requestedState: Navigation['syncState']) =>
       setState((st) => {
@@ -55,17 +49,8 @@ export function useNavigation(
     []
   );
   const flagHasError = useCallback(() => setSyncState('error'), [setSyncState]);
-  const navigator = useMemo<Navigator>(
+  const loader = useMemo<PageLoader>(
     () => ({
-      reset() {
-        setState((st) => ({
-          ...st,
-          instanceId: st.instanceId + 1,
-          current: 0,
-          history: [{ uri, html, baseUrl }],
-          syncState: 'init'
-        }));
-      },
       reload() {
         setState((st) => ({
           ...st,
@@ -73,65 +58,38 @@ export function useNavigation(
           syncState: 'init'
         }));
       },
-      navigate(next: WebViewSource) {
-        setState((st) => ({
-          ...st,
-          current: st.current + 1,
-          history: [...st.history, next],
-          syncState: 'init'
-        }));
-      },
       goBack() {
-        setState((st) => {
-          if (canGoBack(st)) {
-            return {
-              ...st,
-              current: st.current - 1,
-              syncState: 'init'
-            };
-          }
-          return st;
-        });
+        printUnsupportedOperation('goBack');
       },
       goForward() {
-        setState((st) => {
-          if (canGoForward(st)) {
-            return {
-              ...st,
-              current: st.current + 1,
-              syncState: 'init'
-            };
-          }
-          return st;
-        });
+        printUnsupportedOperation('goForward');
+      },
+      stopLoading() {
+        printUnsupportedOperation('stopLoading');
       }
     }),
-    [uri, html, baseUrl]
+    []
   );
-  // useEffect(() => {
-  //   navigator.reset();
-  // }, [navigator]);
   return useMemo(
     () => ({
       instanceId: navState.instanceId,
-      uri: histUri,
-      baseUrl: histBaseUrl,
-      html: histHtml,
-      navigator,
+      uri,
+      baseUrl,
+      html,
+      loader,
       syncState: navState.syncState,
       setSyncState,
-      flagHasError,
-      canGoBack: canGoBack.bind(null, navState),
-      canGoForward: canGoForward.bind(null, navState)
+      flagHasError
     }),
     [
-      navState,
+      navState.instanceId,
+      navState.syncState,
+      uri,
+      baseUrl,
+      html,
+      loader,
       setSyncState,
-      flagHasError,
-      histBaseUrl,
-      histHtml,
-      histUri,
-      navigator
+      flagHasError
     ]
   );
 }
