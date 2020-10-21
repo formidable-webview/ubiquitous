@@ -41,9 +41,6 @@ const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
   function BackendRenderer(props: SkelettonProps, ref: Ref<DOMBackendHandle>) {
     const {
       DOMBackend,
-      injectedJavaScript,
-      injectedJavaScriptBeforeContentLoaded,
-      javaScriptEnabled,
       onError,
       onHttpError,
       onLoad,
@@ -53,12 +50,8 @@ const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
       onMessage,
       onNavigationStateChange,
       onShouldStartLoadWithRequest,
-      originWhitelist,
-      renderError,
-      renderLoading,
-      source,
       style,
-      userAgent
+      ...otherProps
     } = props;
     const webViewStyle = [styles.webView, style];
     const domHandlers = useMemo(
@@ -86,19 +79,10 @@ const BackendRenderer = forwardRef<DOMBackendHandle, SkelettonProps>(
     return (
       <DOMBackend
         domHandlers={domHandlers}
-        injectedJavaScript={injectedJavaScript}
-        injectedJavaScriptBeforeContentLoaded={
-          injectedJavaScriptBeforeContentLoaded
-        }
-        javaScriptEnabled={javaScriptEnabled}
         onHttpError={onHttpError}
-        originWhitelist={originWhitelist}
         ref={ref}
-        renderLoading={renderLoading}
-        renderError={renderError}
-        source={source}
         style={webViewStyle}
-        userAgent={userAgent}
+        {...otherProps}
       />
     );
   }

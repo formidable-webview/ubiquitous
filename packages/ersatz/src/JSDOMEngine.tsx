@@ -6,7 +6,10 @@ import {
   forwardRef
 } from 'react';
 import { JSDOM } from 'jsdom';
-import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import {
+  AndroidWebViewProps,
+  WebViewNavigationEvent
+} from 'react-native-webview/lib/WebViewTypes';
 import type {
   DOMBackendHandle,
   DOMBackendHandlers,
@@ -75,7 +78,10 @@ function initDOM({
   return dom;
 }
 
-type JSDOMBackendEngineProps = Omit<DOMBackendProps, 'source'> & {
+type JSDOMBackendEngineProps = Omit<
+  DOMBackendProps<Pick<AndroidWebViewProps, 'userAgent'>>,
+  'source'
+> & {
   html: string;
   url: string;
 };
