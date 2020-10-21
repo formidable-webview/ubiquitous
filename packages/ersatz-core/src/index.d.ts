@@ -1,8 +1,9 @@
 import type { RefAttributes, Component } from 'react';
-import type { default as WebView, WebViewProps } from 'react-native-webview';
+import type { default as WebView } from 'react-native-webview';
+import { WebViewSharedProps } from 'react-native-webview/lib/WebViewTypes';
 
 export type DOMBackendHandlers = Pick<
-  WebViewProps,
+  WebViewSharedProps,
   | 'onError'
   | 'onLoad'
   | 'onLoadEnd'
@@ -13,24 +14,12 @@ export type DOMBackendHandlers = Pick<
   | 'onShouldStartLoadWithRequest'
 >;
 
-export type DOMBackendProps = Pick<
-  WebViewProps,
-  | 'geolocationEnabled'
-  | 'injectedJavaScript'
-  | 'injectedJavaScriptBeforeContentLoaded'
-  | 'javaScriptEnabled'
-  | 'mediaPlaybackRequiresUserAction'
-  | 'onHttpError'
-  | 'onLayout'
-  | 'renderError'
-  | 'renderLoading'
-  | 'source'
-  | 'style'
-  | 'userAgent'
-  | 'originWhitelist'
+export type DOMBackendProps<O = {}> = Omit<
+  WebViewSharedProps,
+  keyof DOMBackendHandlers
 > & {
   domHandlers: DOMBackendHandlers;
-};
+} & O;
 
 export type DOMBackendState = 'loading' | 'loaded';
 
@@ -71,16 +60,16 @@ export type ComponentTypeWithRef<H, P> =
   | ComponentClassWithHandle<H, P>
   | FunctionComponentWithRef<H, P>;
 
-export interface DOMBackendComponentInstance
-  extends Component<DOMBackendProps, any>,
+export interface DOMBackendComponentInstance<O = {}>
+  extends Component<DOMBackendProps<O>, any>,
     DOMBackendHandle {}
 
-export interface DOMBackendComponentClass
-  extends ComponentClassWithHandle<DOMBackendHandle, DOMBackendProps> {}
+export interface DOMBackendComponentClass<O = {}>
+  extends ComponentClassWithHandle<DOMBackendHandle, DOMBackendProps<O>> {}
 
-export interface DOMBackendFunctionComponent
-  extends FunctionComponentWithRef<DOMBackendHandle, DOMBackendProps> {}
+export interface DOMBackendFunctionComponent<O = {}>
+  extends FunctionComponentWithRef<DOMBackendHandle, DOMBackendProps<O>> {}
 
-export type DOMBackendComponent =
-  | DOMBackendComponentClass
-  | DOMBackendFunctionComponent;
+export type DOMBackendComponent<O = {}> =
+  | DOMBackendComponentClass<O>
+  | DOMBackendFunctionComponent<O>;
