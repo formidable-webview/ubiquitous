@@ -1,0 +1,278 @@
+=== Features
+
+==== Web-only Props
+
+[width="100%",options="header"]
+|===
+|Prop | Type | Default | Origin |Comments
+
+| `lazyLoadingEnabled`
+| `boolean`
+| `false`
+| Any
+| Set iframe `loading="lazy"`
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-loading[attribute].
+This feature has the potential to boost page loading performances, but is still
+experimental.
+
+| `sandboxEnabled`
+| `boolean`
+| `true`
+| Any
+| By default, the iframe will be
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox[sandboxed]
+for the sake of safety. You can
+disable this behavior by setting this prop to `true`.
+Read more about the security risks associated with removing sandboxing
+https://looker.com/blog/iframe-sandbox-tutorial[here].
+
+| `sandboxAuthorizations`
+| `string`
+| `"allow-same-origin allow-modals allow-popups allow-forms"`
+| Any
+| Override iframe
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox[`sandbox`
+attribute] to lift sandbox restrictions.
+
+| `allowedFeatures`
+| `string`
+| `"fullscreen payment document-domain"`
+| Any
+| Override iframe
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow[`allow`
+attribute] to set feature policies.
+If you need access to a specific peripherals, it can be allowed here (microphone, camera, battery ...).
+
+|===
+
+==== Shared Props
+
+This is a support overview for https://github.com/react-native-community/react-native-webview/blob/master/src/WebViewTypes.ts[`WebViewSharedProps`] in this library.
+
+===== Behavior Props
+
+[width="100%",options="header"]
+|===
+| Prop | Support | Origin | Comments
+
+| `javaScriptEnabled`
+| :heavy_check_mark:
+| Any
+| Ignored when `sandboxEnabled` set to `false`.
+
+| `containerStyle`
+| :heavy_check_mark:
+| Any
+| Default styling is guaranteed strictly equivalent with community `WebView` for mobile
+platforms.
+
+| `style`
+| :heavy_check_mark:
+| Any
+| Default styling is guaranteed strictly equivalent with community `WebView` for mobile
+platforms.
+
+| `renderError`
+| :heavy_check_mark:
+|  Any
+| Because HTTP requests from the browser cannot be accessed for obvious
+security reasons, and `onerror` events are not triggered on iframes in modern
+browsers, we use a little trick: we send an opaque HTTP HEAD request to the
+resource, and catch an error when the host is unavailable. You can disable this
+feature by setting `errorRenderingEnabled` to `false`.
+
+| `renderLoading`
+| :heavy_check_mark:
+| Any
+|
+
+| `mediaPlaybackRequiresUserAction`
+| :heavy_check_mark:
+| Any
+|
+
+| `showsHorizontalScrollIndicator`
+| :heavy_check_mark:
+| Any
+|
+
+| `showsVerticalScrollIndicator`
+| :heavy_check_mark:
+| Any
+|
+
+| `source`
+| :warning:
+| Any
+| Both remote URI (with the exception of `body`, `headers` and `method`) and inline HTML (including `baseUrl`) are supported. Local files are not supported.
+
+| `injectedJavaScript`
+| :warning:
+| Same origin
+|
+
+| `injectedJavaScriptBeforeContentLoaded`
+| :warning:
+| Same origin
+|
+
+| `originWhitelist`
+| :warning:
+| Same origin
+| Note that contrary to mobile platforms, this prop will default to `[]`, because it makes little sense to allow navigation within the iframe.
+
+| `injectedJavaScriptForMainFrameOnly`
+| :x:
+| Any
+| Consider the behavior of `web` as if this prop was forced to `true`.
+
+| `injectedJavaScriptBeforeContentLoadedForMainFrameOnly`
+| :x:
+| Any
+| Consider the behavior of Ersatz as if this prop was forced to `true`.
+
+| `nativeConfig`
+| :x:
+| None
+|
+
+| `userAgent`
+| :x:
+| None
+|
+
+| `applicationNameForUserAgent`
+| :x:
+| None
+|
+
+| `allowsFullscreenVideo`
+| :x:
+| None
+| Note about `allow: fullscreen`
+
+| `cacheEnabled`
+| :x:
+| None
+|
+
+| `javaScriptCanOpenWindowsAutomatically`
+| :x:
+| None
+| Popups opened with `window.open` will be suppressed by a majority of modern browsers.
+
+| `startInLoadingState`
+| :x:
+| None
+|
+
+|===
+
+===== Event Handlers Props
+
+[width="100%",cols="16%,8%,16,60%",options="header",]
+|===
+| Event Handler
+| Support
+| Origin
+| Comments
+
+| `onScroll`
+| :heavy_check_mark:
+| Any
+|
+
+| `onLoad`
+| :heavy_check_mark:
+| Any
+| Invoked when the WebView has finished the load operation with success.
+
+| `onLoadEnd`
+| :heavy_check_mark:
+| Any
+| Invoked when the WebView has finished the load operation, either with a success or failure 
+
+| `onError`
+| :heavy_check_mark:
+| Any
+| Invoked when the WebView has finished the load operation with a failure.
+
+| `onLoadStart`
+| :heavy_check_mark:
+| Any
+| Invoked when the WebView is starting to load from a source object. 
+
+| `onLoadProgress`
+| :heavy_check_mark:
+| Any
+| Although we support this, only one event will be fired at the end with `progress: 1`.
+
+| `onMessage`
+| :warning:
+| Same Origin
+| Invoked when a script in the backend
+has posted a message with `window.ReactNativeWebView.postMessage`.
+
+| `onNavigationStateChange`
+| :warning:
+| Same Origin
+| Navigation events from a cross origin will not be tracked.
+
+| `onShouldStartLoadWithRequest`
+| :warning:
+| Same Origin
+| Navigation events from a cross origin will not be cancelable.
+
+| `onHttpError`
+| :x:
+| None
+| There is no way to access HTTP requests submitted by browsers.
+
+| `onFileDownload`
+| :x:
+| None
+|
+|===
+
+==== Instance Methods
+
+For any of the unsupported methods, a method is defined but will do nothing
+when invoked.
+
+[width="100%",cols="18%,18%,14%,60%",options="header",]
+|===
+| Method
+| Support
+| Origin
+| Comments
+
+| `requestFocus`
+| :heavy_check_mark:
+| Any
+|
+
+| `injectJavaScript`
+| :warning:
+| Same Origin
+| Document is not accessible in cross-origins iframes.
+
+| `reload`
+| :warning:
+| Any
+| Reload works, but navigation history will be lost.
+
+| `goBack`
+| :x:
+| None
+| Navigation is not supported.
+
+| `goForward`
+| :x:
+| None
+| Navigation is not supported.
+
+| `stopLoading`
+| :x:
+| None
+| Method is present but does nothing.
+|===

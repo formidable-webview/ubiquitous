@@ -16,7 +16,7 @@ import {
   defaultRenderLoading,
   getEventBase
 } from './shared';
-import { WebBackendState } from './types';
+import { IframeWebViewProps, WebBackendState } from './types';
 import { usePageLoader } from './logic/navigation';
 import { useBackendHandle } from './logic/backend-handle';
 import { useOnLoadEnd } from './logic/on-load-end';
@@ -46,15 +46,19 @@ type IframeProps = JSX.IntrinsicElements['iframe'] & {
 };
 
 function buildIframeProps({
-  instanceId,
-  width,
-  iframeRef,
-  uri,
-  html,
-  javaScriptEnabled,
+  allowedFeatures,
   geolocationEnabled,
+  html,
+  iframeRef,
+  instanceId,
+  javaScriptEnabled,
+  lazyLoadingEnabled,
   mediaPlaybackRequiresUserAction,
-  onLoad
+  onLoad,
+  sandboxAuthorizations,
+  sandboxEnabled,
+  uri,
+  width
 }: {
   width?: string | number;
   onLoad: () => void;
@@ -68,21 +72,26 @@ function buildIframeProps({
     style: styles.iframe,
     src: uri,
     srcDoc: html,
-    allow: `fullscreen payment document-domain ${
+    allow: `${allowedFeatures} ${
       !mediaPlaybackRequiresUserAction ? '' : 'autoplay'
     } ${geolocationEnabled ? 'geolocation' : ''}`,
     allowFullScreen: true,
     allowpaymentrequest: 'true',
-    sandbox: `allow-same-origin allow-modals ${
-      javaScriptEnabled ? 'allow-scripts' : ''
-    } allow-popups allow-forms`,
     onLoad: onLoad
   };
+  if (lazyLoadingEnabled) {
+    iframeProps.loading = 'lazy';
+  }
+  if (sandboxEnabled) {
+    iframeProps.sandbox = `${sandboxAuthorizations} ${
+      javaScriptEnabled ? 'allow-scripts' : ''
+    }`;
+  }
   return iframeProps;
 }
 
-export const WebBackend: DOMBackendFunctionComponent = forwardRef(
-  (props: DOMBackendProps & ViewProps, ref) => {
+export const WebBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwardRef(
+  (props: DOMBackendProps<IframeWebViewProps> & ViewProps, ref) => {
     const { renderLoading, renderError, onLayout, style, source } = props;
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const frameId = useRef(globalFrameId++).current;
@@ -127,7 +136,12 @@ export const WebBackend: DOMBackendFunctionComponent = forwardRef(
   }
 );
 
-const defaultProps: Partial<DOMBackendProps> = {
+const defaultProps: Partial<DOMBackendProps<IframeWebViewProps>> = {
+  lazyLoadingEnabled: false,
+  sandboxEnabled: true,
+  sandboxAuthorizations:
+    'allow-same-origin allow-modals allow-popups allow-forms',
+  allowedFeatures: 'fullscreen payment document-domain',
   geolocationEnabled: false,
   mediaPlaybackRequiresUserAction: true,
   originWhitelist: [],

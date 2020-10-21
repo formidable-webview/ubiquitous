@@ -9,7 +9,6 @@ In such restricted environments, the current page will not have access to the co
 
 - JavaScript injection will be disabled;
 - Messaging will be disabled;
-- History will not register navigation events _from_ cross origins, but can still register events _towards_ cross origins;
 
 If you are in control of the cross origin, you can however set an explicit domain in containing and contained resources to work around this issue:
 
