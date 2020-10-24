@@ -24,6 +24,7 @@ import { useErrorEffect } from './logic/error-effect';
 import { useMessageEffect } from './logic/message-effect';
 import { useDOMInitEffect } from './logic/dom-init-effect';
 import { useOriginWhitelistEffect } from './logic/origin-whitelist-effect';
+import { useIframeProps, defaultWebPolicies } from './logic/iframe-props';
 
 let globalFrameId = 0;
 
@@ -39,55 +40,6 @@ function useNormalizedDimensions(style: StyleProp<ViewStyle>) {
       typeof height === 'number' ? `${height}px` : height
     })`
   };
-}
-
-type IframeProps = JSX.IntrinsicElements['iframe'] & {
-  allowpaymentrequest: string;
-};
-
-function buildIframeProps({
-  allowedFeatures,
-  geolocationEnabled,
-  html,
-  iframeRef,
-  instanceId,
-  javaScriptEnabled,
-  lazyLoadingEnabled,
-  mediaPlaybackRequiresUserAction,
-  onLoad,
-  sandboxAuthorizations,
-  sandboxEnabled,
-  uri,
-  width
-}: {
-  width?: string | number;
-  onLoad: () => void;
-} & WebBackendState) {
-  // allow "peripherals": midi, microphone, magnetometer, usb, camera, battery, ambient-light-sensor, accelerometer
-  const iframeProps: IframeProps = {
-    key: instanceId,
-    width,
-    height: '100%',
-    ref: iframeRef,
-    style: styles.iframe,
-    src: uri,
-    srcDoc: html,
-    allow: `${allowedFeatures} ${
-      !mediaPlaybackRequiresUserAction ? '' : 'autoplay'
-    } ${geolocationEnabled ? 'geolocation' : ''}`,
-    allowFullScreen: true,
-    allowpaymentrequest: 'true',
-    onLoad: onLoad
-  };
-  if (lazyLoadingEnabled) {
-    iframeProps.loading = 'lazy';
-  }
-  if (sandboxEnabled) {
-    iframeProps.sandbox = `${sandboxAuthorizations} ${
-      javaScriptEnabled ? 'allow-scripts' : ''
-    }`;
-  }
-  return iframeProps;
 }
 
 export const WebBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwardRef(
@@ -125,7 +77,12 @@ export const WebBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwa
         ]}>
         {unstable_createElement(
           'iframe',
-          buildIframeProps({ ...backendState, onLoad: handleOnLoadEnd, width })
+          useIframeProps({
+            ...backendState,
+            onLoad: handleOnLoadEnd,
+            width,
+            style: styles.iframe
+          })
         )}
         {syncState === 'error'
           ? renderError!(undefined, 0, 'The iframe failed to load.')
@@ -137,16 +94,18 @@ export const WebBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwa
 );
 
 const defaultProps: Partial<DOMBackendProps<IframeWebViewProps>> = {
-  lazyLoadingEnabled: false,
-  sandboxEnabled: true,
-  sandboxAuthorizations:
-    'allow-same-origin allow-modals allow-popups allow-forms',
-  allowedFeatures: 'fullscreen payment document-domain',
+  fullscreenEnabled: true,
   geolocationEnabled: false,
+  lazyLoadingEnabled: false,
   mediaPlaybackRequiresUserAction: true,
+  messagingEnabled: true,
   originWhitelist: [],
+  paymentEnabled: true,
   renderError: defaultRenderError,
-  renderLoading: defaultRenderLoading
+  renderLoading: defaultRenderLoading,
+  sandbox: 'allow-same-origin allow-modals allow-popups allow-forms',
+  sandboxEnabled: true,
+  webPolicies: defaultWebPolicies
 };
 
 WebBackend.defaultProps = defaultProps;

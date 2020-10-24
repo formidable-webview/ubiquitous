@@ -6,21 +6,53 @@ import {
 import { EventBase } from '@formidable-webview/skeletton';
 
 import { WebViewSharedProps } from 'react-native-webview/lib/WebViewTypes';
+import { WebPermissionPoliciesMap } from './web-features';
 
 export interface IframeWebViewProps extends WebViewSharedProps {
   /**
-   * Sets whether Geolocation is available.
+   * Set iframe `csp` attribute.
+   * See
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-csp | MDN reference.}
+   *
+   * @platform web
+   */
+  csp?: string;
+  /**
+   * Set iframe `referrerpolicy` attribute.
+   * See
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-referrerpolicy | MDN reference.}
+   *
+   * @platform web
+   */
+  referrerPolicy?: string;
+  /**
+   * Sets whether Geolocation API can be used.
    *
    * @defaultValue false
    * @platform web
    */
   geolocationEnabled?: boolean;
   /**
-   * Set iframe `loading="lazy"` attribute.
-   * This feature has the potential to boost page loading performances, but is
-   * still experimental.
+   * Sets whether Fullscreen API can be used.
    *
-   * See {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-loading}.
+   * @defaultValue true
+   * @platform web
+   */
+  fullscreenEnabled?: boolean;
+  /**
+   * Sets whether PaymentRequest API can be used.
+   *
+   * @defaultValue true
+   * @platform web
+   */
+  paymentEnabled?: boolean;
+  /**
+   * Set iframe `loading="lazy"` attribute.
+   * This feature has the potential to boost page loading performances and limit
+   * memory consumption, but is yet experimental.
+   *
+   * See
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-loading | loading attribute on MDN}.
    *
    * @defaultValue false
    * @platform web
@@ -38,24 +70,60 @@ export interface IframeWebViewProps extends WebViewSharedProps {
    */
   sandboxEnabled?: boolean;
   /**
-   * Override iframe
-   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox | sandbox attribute}
-   * to lift sandbox restrictions.
+   * Sets whether `WebView` messaging is enabled.
+   *
+   * @remarks Messaging will not work on cross origins iframes.
+   *
+   * @defaultValue true
+   * @platform web
+   *
+   */
+  messagingEnabled?: boolean;
+  /**
+   * Set iframe sandbox attribute.
+   * See
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox | sandbox attribute on MDN}.
+   *
+   * @remarks
+   * - This prop will be ignored when `sandboxEnabled` is set to `false`.
+   * - `javascriptEnabled` prop will set `"allow-scripts"` rule when `true`.
    *
    * @defaultValue "allow-same-origin allow-modals allow-popups allow-forms"
    * @platform web
    */
-  sandboxAuthorizations?: string;
+  sandbox?: string;
   /**
-   * Override iframe
+   * A map to override iframe
    * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow | allow attribute}
-   * to set feature policies. If you need access to a specific
+   * to set permission policies. If you need access to a specific
    * peripherals, it can be allowed here (microphone, camera, battery ...).
    *
-   * @defaultValue "fullscreen payment document-domain"
+   * Each key is the name of a policy, camelCased, and each value is either:
+   *
+   * - `true`, which will enable the permission with default allowlist;
+   * - `false`, which will disable the permission by setting allowlist to `'none'`;
+   * - a string, which should follow the syntax of an allowlist to specify origins.
+   *
+   * Read more about allowlist syntax {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Feature_Policy/Using_Feature_Policy#allowlist | on MDN}.
+   *
+   * @remarks Some policies will be derived from specific props such as `fullscreenEnabled`.
+   * When you set `webPolicies` prop, policies derived from props will be
+   * merged into, meaning you can override them, but they will otherwise be preserved.
+   *
+   * @example
+   *
+   * ```tsx
+   * <IframeWebView paymentEnabled webFeatures={{ documentDomain: false, camera: "'src' https://example.com" }} />
+   * ```
+   * will be rendered in the DOM as
+   * ```html
+   * <iframe allowpaymentrequest="true" allow="payment; document-domain 'none'; camera 'src' https://example.com"></iframe>
+   * ```
+   *
+   * @defaultValue `{ documentDomain: true }`
    * @platform web
    */
-  allowedFeatures?: string;
+  webPolicies?: WebPermissionPoliciesMap;
 }
 
 export interface Navigation {

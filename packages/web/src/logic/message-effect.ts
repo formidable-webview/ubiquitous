@@ -7,8 +7,9 @@ export function useMessageEffect({
   domHandlers,
   frameId,
   instanceId,
-  uri,
-  ownerOrigin
+  messagingEnabled,
+  ownerOrigin,
+  uri
 }: WebBackendState) {
   useEffect(
     function messageEffect() {
@@ -23,9 +24,15 @@ export function useMessageEffect({
             data.message
           );
       }
-      window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
+      if (messagingEnabled) {
+        window.addEventListener('message', handleMessage);
+      }
+      return () => {
+        if (messagingEnabled) {
+          window.removeEventListener('message', handleMessage);
+        }
+      };
     },
-    [domHandlers, frameId, ownerOrigin, uri, instanceId]
+    [domHandlers, frameId, ownerOrigin, uri, instanceId, messagingEnabled]
   );
 }
