@@ -2,11 +2,18 @@ function camelCaseToDash(chars: string) {
   return chars.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
-/**
- * This features are extracted from w3c specifications,
- * {@link https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md | "Policy Controlled Features"}.
- */
 export type WebPermissionName =
+  | 'topNavigation'
+  | 'forms'
+  | 'modals'
+  | 'popups'
+  | 'pointerLock'
+  | 'orientationLock'
+  | 'presentation'
+  | 'plugins'
+  | 'downloadsWithoutUserActivation';
+
+export type WebFeatureName =
   | 'accelerometer'
   | 'ambientLightSensor'
   | 'autoplay'
@@ -34,32 +41,55 @@ export type WebPermissionName =
   | 'xrSpacialTracking';
 
 /**
- * `false` will be mapped to `'none'`, and `true` to
+ * This features are extracted from w3c specifications,
+ * {@link https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md | "Policy Controlled Features"}.
  */
-export type WebPermissionPolicy = boolean | string;
+export type WebPolicyName = WebPermissionName | WebFeatureName;
 
-export type WebPermissionPoliciesMap = Partial<
-  Record<WebPermissionName, WebPermissionPolicy>
->;
+export const sandboxedPermissions: WebPolicyName[] = [
+  'topNavigation',
+  'forms',
+  'modals',
+  'popups',
+  'pointerLock',
+  'orientationLock',
+  'presentation'
+];
 
 /**
- * @param policiesMap - a list of feature maps which will be shallow-merged
- * from left to right.
+ * `false` will be mapped to `'none'`, and `true` to
  */
-export function compileWebPermissionsPolicies(
-  ...policiesMap: WebPermissionPoliciesMap[]
-) {
-  const features = Object.assign({}, ...policiesMap);
-  return (Object.keys(features) as WebPermissionName[])
+export type WebPolicyValue = boolean | string;
+
+export type WebPoliciesMap = Partial<Record<WebPolicyName, WebPolicyValue>>;
+
+export function compileWebPoliciesToAllowAttr(map: WebPoliciesMap) {
+  return (Object.keys(map) as WebPolicyName[])
     .map(
       (featName) =>
         `${camelCaseToDash(featName)}${
-          features[featName] === false
+          map[featName] === false
             ? " 'none'"
-            : features[featName] === true
+            : map[featName] === true
             ? ''
-            : ' ' + features[featName]
+            : ' ' + map[featName]
         }`
     )
     .join('; ');
+}
+
+/**
+ * See https://github.com/w3c/webappsec-permissions-policy/blob/master/sandbox.md
+ *
+ * @param map The map to compile into string.
+ */
+export function compileWebPoliciesToSandboxAttr(map: WebPoliciesMap) {
+  return (Object.keys(map) as WebPolicyName[]).reduce((prev, permission) => {
+    if (sandboxedPermissions.indexOf(permission) !== 0) {
+      return map[permission] !== false
+        ? `${prev} allow-${camelCaseToDash(permission)}`
+        : prev;
+    }
+    return prev;
+  }, '');
 }

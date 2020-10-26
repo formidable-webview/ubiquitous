@@ -66,7 +66,11 @@ const examples: VisualTestProps[] = [
       height: 320,
       width: 320
     },
-    scrollView: true
+    scrollView: true,
+    extraProps: {
+      // sandbox: "allow-same-origin",
+      seamlessEnabled: true
+    }
   },
   {
     title: 'HTML in View',

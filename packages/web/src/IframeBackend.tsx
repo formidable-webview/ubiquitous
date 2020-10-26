@@ -42,7 +42,7 @@ function useNormalizedDimensions(style: StyleProp<ViewStyle>) {
   };
 }
 
-export const WebBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwardRef(
+export const IframeBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwardRef(
   (props: DOMBackendProps<IframeWebViewProps> & ViewProps, ref) => {
     const { renderLoading, renderError, onLayout, style, source } = props;
     const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -94,21 +94,21 @@ export const WebBackend: DOMBackendFunctionComponent<IframeWebViewProps> = forwa
 );
 
 const defaultProps: Partial<DOMBackendProps<IframeWebViewProps>> = {
-  fullscreenEnabled: true,
+  allowsFullscreen: true,
   geolocationEnabled: false,
   lazyLoadingEnabled: false,
   mediaPlaybackRequiresUserAction: true,
   messagingEnabled: true,
   originWhitelist: [],
-  paymentEnabled: true,
+  allowsPayment: true,
   renderError: defaultRenderError,
   renderLoading: defaultRenderLoading,
-  sandbox: 'allow-same-origin allow-modals allow-popups allow-forms',
-  sandboxEnabled: true,
+  sandboxEnabled: false,
+  seamlessEnabled: false,
   webPolicies: defaultWebPolicies
 };
 
-WebBackend.defaultProps = defaultProps;
+IframeBackend.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   iframe: {

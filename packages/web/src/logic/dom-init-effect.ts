@@ -17,6 +17,7 @@ export function useDOMInitEffect({
   loader,
   originWhitelist,
   ownerOrigin,
+  messagingEnabled,
   setSyncState
 }: WebBackendState) {
   useEffect(
@@ -47,17 +48,21 @@ export function useDOMInitEffect({
       const ifwindow = backendHandle.getWindow() as Window & {
         ReactNativeWebView: any;
       };
-      if (ifwindow) {
-        ifwindow.ReactNativeWebView = {
-          postMessage(message: string) {
-            ifwindow.parent.postMessage(
-              { message, frameId, instanceId },
-              ownerOrigin
-            );
-          }
-        };
+      if (ifwindow && messagingEnabled) {
+        try {
+          ifwindow.ReactNativeWebView = {
+            postMessage(message: string) {
+              ifwindow.parent.postMessage(
+                { message, frameId, instanceId },
+                ownerOrigin
+              );
+            }
+          };
+        } catch (e) {}
       }
-      ifwindow?.addEventListener('beforeunload', handleBeforeUnload);
+      try {
+        ifwindow?.addEventListener('beforeunload', handleBeforeUnload);
+      } catch (e) {}
       if (injectedJavaScriptBeforeContentLoaded) {
         backendHandle.injectJavaScript(injectedJavaScriptBeforeContentLoaded);
       }
@@ -77,6 +82,7 @@ export function useDOMInitEffect({
       injectedJavaScriptBeforeContentLoaded,
       instanceId,
       loader,
+      messagingEnabled,
       originWhitelist,
       ownerOrigin,
       setSyncState

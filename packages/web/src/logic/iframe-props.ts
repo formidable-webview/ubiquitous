@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { WebBackendState } from '../types';
 import {
-  compileWebPermissionsPolicies,
-  WebPermissionPoliciesMap
+  compileWebPoliciesToAllowAttr,
+  compileWebPoliciesToSandboxAttr,
+  WebPoliciesMap
 } from '../web-features';
 
 type IframeProps = JSX.IntrinsicElements['iframe'] & {
@@ -13,8 +14,8 @@ type IframeProps = JSX.IntrinsicElements['iframe'] & {
 export function useIframeProps({
   csp,
   referrerPolicy,
-  fullscreenEnabled,
-  paymentEnabled,
+  allowsFullscreen,
+  allowsPayment,
   webPolicies,
   geolocationEnabled,
   html,
@@ -24,7 +25,8 @@ export function useIframeProps({
   lazyLoadingEnabled,
   mediaPlaybackRequiresUserAction,
   onLoad,
-  sandbox,
+  allowsPreserveOrigin,
+  seamlessEnabled,
   style = undefined,
   sandboxEnabled,
   uri,
@@ -33,26 +35,35 @@ export function useIframeProps({
   width?: string | number;
   onLoad: () => void;
 } & WebBackendState) {
-  const allow = useMemo(
+  const permissions = useMemo(
     () =>
-      compileWebPermissionsPolicies(
+      Object.assign(
+        {},
         defaultWebPolicies,
         {
           geolocation: !!geolocationEnabled,
           autoplay: !mediaPlaybackRequiresUserAction,
-          fullscreen: fullscreenEnabled,
-          payment: paymentEnabled
+          fullscreen: allowsFullscreen,
+          payment: allowsPayment,
+          scripts: javaScriptEnabled
         },
         webPolicies || {}
       ),
     [
       webPolicies,
-      fullscreenEnabled,
-      paymentEnabled,
+      allowsFullscreen,
+      allowsPayment,
       geolocationEnabled,
+      javaScriptEnabled,
       mediaPlaybackRequiresUserAction
     ]
   );
+  const allow = useMemo(() => compileWebPoliciesToAllowAttr(permissions), [
+    permissions
+  ]);
+  const sandbox = useMemo(() => compileWebPoliciesToSandboxAttr(permissions), [
+    permissions
+  ]);
   return useMemo(() => {
     const iframeProps: IframeProps = {
       width,
@@ -62,9 +73,10 @@ export function useIframeProps({
       key: instanceId,
       height: '100%',
       ref: iframeRef,
-      src: uri,
+      seamless: seamlessEnabled,
+      src: uri || 'about:blank',
       srcDoc: html,
-      allowFullScreen: fullscreenEnabled
+      allowFullScreen: allowsFullscreen
     };
     if (csp) {
       iframeProps.csp = csp;
@@ -72,40 +84,50 @@ export function useIframeProps({
     if (referrerPolicy) {
       iframeProps.referrerPolicy = referrerPolicy;
     }
-    if (paymentEnabled) {
+    if (allowsPayment) {
       iframeProps.allowpaymentrequest = 'true';
     }
     if (lazyLoadingEnabled) {
       iframeProps.loading = 'lazy';
     }
     if (sandboxEnabled) {
-      iframeProps.sandbox = `${sandbox} ${
-        javaScriptEnabled ? 'allow-scripts' : ''
-      }`;
+      iframeProps.sandbox = `${
+        allowsPreserveOrigin ? 'allow-same-origin' : ''
+      } ${sandbox}`;
     }
     return iframeProps;
   }, [
     allow,
     csp,
-    fullscreenEnabled,
+    allowsFullscreen,
     html,
     iframeRef,
     instanceId,
-    javaScriptEnabled,
     lazyLoadingEnabled,
     onLoad,
-    paymentEnabled,
+    allowsPayment,
+    allowsPreserveOrigin,
     referrerPolicy,
     sandbox,
     sandboxEnabled,
+    seamlessEnabled,
     style,
     uri,
     width
   ]);
 }
 
-export const defaultWebPolicies: WebPermissionPoliciesMap = {
+export const defaultWebPolicies: WebPoliciesMap = {
   fullscreen: true,
   payment: true,
-  documentDomain: true
+  documentDomain: true,
+  forms: false,
+  modals: false,
+  orientationLock: false,
+  plugins: false,
+  pointerLock: false,
+  popups: false,
+  presentation: false,
+  topNavigation: false,
+  downloadsWithoutUserActivation: false
 };

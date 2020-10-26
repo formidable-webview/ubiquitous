@@ -6,9 +6,37 @@ import {
 import { EventBase } from '@formidable-webview/skeletton';
 
 import { WebViewSharedProps } from 'react-native-webview/lib/WebViewTypes';
-import { WebPermissionPoliciesMap } from './web-features';
+import { WebPoliciesMap } from './web-features';
 
 export interface IframeWebViewProps extends WebViewSharedProps {
+  /**
+   * Sets whether Fullscreen API can be used.
+   *
+   * @defaultValue true
+   * @platform web
+   */
+  allowsFullscreen?: boolean;
+  /**
+   * Sets whether PaymentRequest API can be used.
+   *
+   * @defaultValue true
+   * @platform web
+   */
+  allowsPayment?: boolean;
+  /**
+   * Sets whether the embedded browsing context preserves its own origin.
+   * Setting this prop to `false` will assign this browsing context an opaque
+   * origin. It will have great security benefits, at the cost of limited
+   * features. When `false`, any prop that has the "same origin" limitation
+   * will be ignored.
+   *
+   * @remarks Under the hook, this prop maps to `sandbox="allow-same-origin"`
+   * iframe attribute.
+   *
+   * @defaultValue true
+   * @platform web
+   */
+  allowsPreserveOrigin?: boolean;
   /**
    * Set iframe `csp` attribute.
    * See
@@ -33,20 +61,6 @@ export interface IframeWebViewProps extends WebViewSharedProps {
    */
   geolocationEnabled?: boolean;
   /**
-   * Sets whether Fullscreen API can be used.
-   *
-   * @defaultValue true
-   * @platform web
-   */
-  fullscreenEnabled?: boolean;
-  /**
-   * Sets whether PaymentRequest API can be used.
-   *
-   * @defaultValue true
-   * @platform web
-   */
-  paymentEnabled?: boolean;
-  /**
    * Set iframe `loading="lazy"` attribute.
    * This feature has the potential to boost page loading performances and limit
    * memory consumption, but is yet experimental.
@@ -70,6 +84,18 @@ export interface IframeWebViewProps extends WebViewSharedProps {
    */
   sandboxEnabled?: boolean;
   /**
+   * Set iframe `seamless` attribute.
+   *
+   * See
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-seamless | loading attribute on MDN}.
+   *
+   * @remarks As of 2020, almost no browser support this attribute.
+   *
+   * @defaultValue false
+   * @platform web
+   */
+  seamlessEnabled?: boolean;
+  /**
    * Sets whether `WebView` messaging is enabled.
    *
    * @remarks Messaging will not work on cross origins iframes.
@@ -79,19 +105,6 @@ export interface IframeWebViewProps extends WebViewSharedProps {
    *
    */
   messagingEnabled?: boolean;
-  /**
-   * Set iframe sandbox attribute.
-   * See
-   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox | sandbox attribute on MDN}.
-   *
-   * @remarks
-   * - This prop will be ignored when `sandboxEnabled` is set to `false`.
-   * - `javascriptEnabled` prop will set `"allow-scripts"` rule when `true`.
-   *
-   * @defaultValue "allow-same-origin allow-modals allow-popups allow-forms"
-   * @platform web
-   */
-  sandbox?: string;
   /**
    * A map to override iframe
    * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow | allow attribute}
@@ -106,14 +119,14 @@ export interface IframeWebViewProps extends WebViewSharedProps {
    *
    * Read more about allowlist syntax {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Feature_Policy/Using_Feature_Policy#allowlist | on MDN}.
    *
-   * @remarks Some policies will be derived from specific props such as `fullscreenEnabled`.
+   * @remarks Some policies will be derived from specific props such as `allowsFullscreen`.
    * When you set `webPolicies` prop, policies derived from props will be
    * merged into, meaning you can override them, but they will otherwise be preserved.
    *
    * @example
    *
    * ```tsx
-   * <IframeWebView paymentEnabled webFeatures={{ documentDomain: false, camera: "'src' https://example.com" }} />
+   * <IframeWebView allowsPayment webFeatures={{ documentDomain: false, camera: "'src' https://example.com" }} />
    * ```
    * will be rendered in the DOM as
    * ```html
@@ -123,7 +136,7 @@ export interface IframeWebViewProps extends WebViewSharedProps {
    * @defaultValue `{ documentDomain: true }`
    * @platform web
    */
-  webPolicies?: WebPermissionPoliciesMap;
+  webPolicies?: WebPoliciesMap;
 }
 
 export interface Navigation {

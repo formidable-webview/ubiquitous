@@ -10,26 +10,31 @@ endif::[]
 
 = @formidable-webview/iframe
 
-A `WebView` component for
-https://github.com/necolas/react-native-web[react-native-web] aimed at feature parity.
+*A security-aware `WebView` component for
+https://github.com/necolas/react-native-web[react-native-web] aimed at feature parity.*
 
 == Features
 
-[WARNING]
-====
-Some features will only work on *same origins*. Check the *Origin* column for
-each prop. That is, under one of these three conditions:
+=== Disclaimer
 
-* When using `source={{ html }}` prop;
-* When using `source={{ uri }}` prop *and* the `uri` domain is equal to the
+This library uses
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe[`<iframe>`]
+elements to render remote resources and reproduce the `WebView` component
+behavior on web pages. *This comes with limitations you should be aware of.*
+
+Most notably, some features will only work on *same origins*. This limitation
+is enforced by web browsers. Check the *Origin* column for each feature. When a
+prop or method is marked with “Same Origin”, it means that one of the following
+conditions must be met for this feature to work:
+
+* Using `source={{ html }}` prop;
+* Using `source={{ uri }}` prop *and* the `uri` domain is equal to the
 page domain;
-* When using `source={{ uri }}` prop *and* the `uri` domain shares a
+* Using `source={{ uri }}` prop *and* the `uri` domain shares a
 superdomain with the page domain *and* both pages declare the same
 superdomain with `document.domain`.
 
-You are strongly advised to read the <<security>> chapter to know more.
-
-====
+You are strongly advised to read the <<security>> chapter to learn more.
 
 === Shared Props
 
@@ -135,7 +140,7 @@ feature by setting `errorRenderingEnabled` to `false`.
 | `allowsFullscreenVideo`
 | :x:
 | None
-| Note about `allow: fullscreen`
+| Use `allowsFullscreen` instead.
 
 | `cacheEnabled`
 | :x:
@@ -145,7 +150,7 @@ feature by setting `errorRenderingEnabled` to `false`.
 | `javaScriptCanOpenWindowsAutomatically`
 | :x:
 | None
-| Popups opened with `window.open` will be suppressed by a majority of modern browsers.
+| Popups opened with `window.open` will be suppressed by modern browsers.
 
 | `startInLoadingState`
 | :x:
@@ -176,7 +181,7 @@ feature by setting `errorRenderingEnabled` to `false`.
 | `onLoadEnd`
 | :heavy_check_mark:
 | Any
-| Invoked when the WebView has finished the load operation, either with a success or failure 
+| Invoked when the WebView has finished the load operation, either with a success or failure
 
 | `onError`
 | :heavy_check_mark:
@@ -186,7 +191,7 @@ feature by setting `errorRenderingEnabled` to `false`.
 | `onLoadStart`
 | :heavy_check_mark:
 | Any
-| Invoked when the WebView is starting to load from a source object. 
+| Invoked when the WebView is starting to load from a source object.
 
 | `onLoadProgress`
 | :heavy_check_mark:
@@ -249,17 +254,30 @@ attribute].
 | Any
 | Sets whether Geolocation API can be used.
 
-| `fullscreenEnabled`
+| `allowsFullscreen`
 | `boolean`
 | `true`
 | Any
 | Sets whether Fullscreen API can be used.
 
-| `paymentEnabled`
+| `allowsPayment`
 | `boolean`
 | `true`
 | Any
 | Sets whether PaymentRequest API can be used.
+
+| `allowsPreserveOrigin`
+| `boolean`
+| `true`
+| Any
+| Sets whether the embedded browsing context preserves its own origin.
+Setting this prop to `false` will assign this browsing context an opaque
+origin. It will have great security benefits, at the cost of limited
+features. When `false`, any prop that has the "same origin" limitation
+will be ignored.
+ +
+*Remarks*: Under the hook, this prop maps to `sandbox="allow-same-origin"`
+iframe attribute.
 
 | `lazyLoadingEnabled`
 | `boolean`
@@ -276,7 +294,9 @@ memory consumption, but is yet experimental.
 | Any
 | By default, the iframe will be
 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox[sandboxed]
-for safety. You can disable this behavior by setting this prop to `true`. Read
+for safety. You can disable this behavior by setting this prop to `true`. *This
+is highly discouraged and can lead to security vulnerabilities*. You are
+advised to whitelist features and permissions you need with `webPolicies` prop instead. Read
 more about the security risks associated with removing sandboxing
 https://looker.com/blog/iframe-sandbox-tutorial[here].
 
@@ -286,37 +306,19 @@ https://looker.com/blog/iframe-sandbox-tutorial[here].
 | Any
 | Sets whether `WebView` messaging is enabled.
 
-| `sandbox`
-| `string`
-| `"allow-same-origin allow-modals allow-popups allow-forms"`
-| Any
-| Override iframe
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox[`sandbox`
-attribute] to lift sandbox restrictions.
-
 | `webPolicies`
 | `{
   [k in string]: boolean \| string
 }`
-| `{
-  documentDomain: true
-}`
+| _Variable_ (depends on other props)
 | Any
 | A map to override iframe
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow[allow attribute]
-to set permission policies. If you need access to a specific
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow[allow]
+and https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow[sandbox] attributes
+to set permission policies. If you need access to specific
 peripherals, it can be allowed here (microphone, camera, battery ...).
-Each key is the name of a policy, camelCased, and each value is either:
 
-* `true`, which will enable the permission with default allowlist;
-* `false`, which will disable the permission by setting allowlist to `'none'`;
-* a string, which should follow the syntax of an allowlist to specify origins.
-
-Read more about allowlist syntax https://developer.mozilla.org/en-US/docs/Web/HTTP/Feature_Policy/Using_Feature_Policy#allowlist[on MDN].
-
-*Remarks*: Some policies will be derived from specific props such as `fullscreenEnabled`.
-When you set `webPolicies` prop, policies derived from props will be
-merged into, meaning you can override them, but they will otherwise be preserved.
+Read our detailed guide: <<webpolicies>>.
 
 |===
 
@@ -366,26 +368,45 @@ when invoked.
 [[security]]
 == Security Notes
 
-This library uses
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe[`<iframe>`] elements to
-render remote resources and reproduce the `WebView` component behavior.
-*This comes with limitations you should be aware of.*
+Iframes have been an attack vector and security breach for a long time.
+Nowadays, iframes feature new attributes to protect the embedding page from
+attacks.
+
+By default, the `IframeWebView` component will sandbox the underlying `iframe`
+to limit attack surface. You are encouraged to review the sandbox attribute by
+reading this article:
+https://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/. You'll be
+able to use `webPolicies` prop to grant specific sandbox permissions. See
+<<webpolicies>>.
 
 === Same Origin Policy
 
 Because of the same origin policy, `iframes` will be rendered in a restricted environment *when the origin of the WebView doesn't match the origin of the current page*.
-In such restricted environments, the current page will not have access to the content of the cross origin page, and thus the following features will be affected:
+In such restricted environments, the current page will not have access to the
+content of the cross origin page, and thus many features will be affected,
+among which:
 
 - JavaScript injection will be disabled;
 - Messaging will be disabled;
 
-These restriction do not apply to inline HTML. If you are in control of the cross origin, you can however set an explicit domain in containing and contained resources to work around this issue:
+These restriction do not apply to inline HTML. If you are in control of the
+cross origin and this cross origin is a subdomain of this page or vice versa,
+you can set an explicit superdomain in the subdomain page(s) to work
+around this issue:
 
 ```js
 document.domain = "company.com";
 ```
 
-https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#Changing_origin[Read more about this on MDN].
+https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#Changing_origin[Read
+more about this on MDN].
+
+Also note that when `allowsPreserveOrigin` prop is set to `false`, the embedded
+browsing context will have a unique opaque origin, meaning it won't share
+its origin with the embedding page, nor with itself. Under the hood, this prop
+maps to `sandbox="allow-same-origin"` attribute when `true`. Disabling the same
+origin is probably the safest approach, especially when the embedding page
+shares its origin with the embedded, but it comes with great limitations.
 
 === IFrame Attributes
 
@@ -402,7 +423,7 @@ https://developer.mozilla.org/fr/docs/Web/HTTP/Feature_Policy[here].
 
 | `csp`
 | `csp`
-| Enforce the embedded page to limit the range of origins from which
+| Enforce the embedded browsing context to limit the range of origins from which
 external resources can be loaded.
 
 | `referrerpolicy`
@@ -411,8 +432,9 @@ external resources can be loaded.
 HTTP requests sent to embedded pages hosts.
 
 | `sandbox`
-| `sandbox`, `sandboxEnabled`
-| Whitelist embedded page capabilities (javascript, forms...).
+| `sandboxEnabled`, `webPolicies`, `allowsPreserveOrigin`
+| Whitelist embedded page permissions (javascript, forms...) and allow or deny
+the page to preserve its own origin.
 
 |===
 
@@ -429,3 +451,137 @@ If no `frame-src` directives is set, user agents will fallback to, by order of
 preference, `child-src` and `default-src` directives.
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src[Read
 more on MDN].
+
+[[webpolicies]]
+=== In-depth Review of `webPolicies` prop
+
+`webPolicies` prop is a map to override iframe
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow[allow]
+and https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-allow[sandbox] attributes
+to set permission policies.
+Keys of this map are the camelCased translation of the following items:
+
+- Browser features;
+- Sandbox features.
+
+The value for each key can either be:
+
+* `true`, which will enable the permission with no allowlist (defaults to `*`);
+* `false`, which will disable the permission by setting allowlist to `'none'`;
+* a string, which should follow the https://developer.mozilla.org/en-US/docs/Web/HTTP/Feature_Policy/Using_Feature_Policy#allowlist[allowlist syntax] to specify origins.
+
+[INFO]
+Some policies will be derived from specific props such as `allowsFullscreen`.
+Policies from `webPolicies` will be merged into policies derived from props,
+meaning you can override derived policies from props with `webPolicies`. It is
+however best advised to favor the most specific props when available, as other
+iframe attributes might be set as a result for retro-compatibility.
+
+==== Sandbox Features
+
+Some `webPolicies` relate to iframe https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox[`sandbox` attribute]. When such policies are
+set, the corresponding rules will be mapped to both `allow` and `sandbox` iframe
+attributes, to follow https://github.com/w3c/webappsec-permissions-policy/blob/master/sandbox.md[W3C proposed standard] while still being retro-compatible. The only exception is
+`allow-same-origin`, which will be determined by `allowsPreserveOrigin` prop.
+An exhaustive sandbox features list is maintained by W3C and
+https://github.com/w3c/webappsec-permissions-policy/blob/master/sandbox.md#policy-controlled-sandbox-features[available
+here].
+
+The below component
+
+[source,jsx]
+----
+const webPolicies = {
+  forms: "https://*.other-domain.com",
+};
+
+function MyComponent() {
+  return (
+    <IframeWebView
+      allowsPreserveOrigin
+      javaScriptEnabled
+      webPolicies={webPolicies}
+      source={{ uri: "https://domain.com/" }}
+    />
+  );
+}
+----
+
+will be rendered as
+
+[source,html]
+----
+<iframe
+  src="https://domain.com/"
+  allow="scripts; forms https://*.other-domain.com"
+  sandbox="allow-same-origin allow-scripts allow-forms"
+></iframe>
+----
+
+You will notice a few things:
+
+- `scripts` rules are derived from `javaScriptEnabled` prop;
+- `allow-same-origin` sandbox rule is derived from `allowsPreserveOrigin`
+prop;
+- The `forms` web policy is mapped to both `sandbox` and `allow`, but the
+latest is more restrictive: it only allows forms on subdomains of
+_other-domain.com_ with _https_ protocol. As per the proposed standard, the
+most restrictive rule should be enforced if the web browser supports
+policy-controlled sandbox features.
+
+==== Browser Features
+
+Browser features includes, among other things:
+
+- Data-sensitive APIs such as Camera, Microphone and other sensors;
+- Payment and Fullscreen APIs;
+- Outdated APIs such as synchronous XHR;
+- Images responsiveness enforcement.
+
+Some features will be derived from specific props such as:
+
+- `allowsPayment`;
+- `allowsFullscreen`;
+- `mediaPlaybackRequiresUserAction`;
+- `geolocationEnabled`.
+
+These props will map to any of the corresponding web features.
+An exhaustive features list is maintained by W3C and
+https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md[available
+here].
+
+The below component
+
+[source,jsx]
+----
+const webPolicies = {
+  accelerometer: "https://domain.cdn.com",
+  camera: false,
+  // Don't do this; this policy is derived from allowsFullscreen prop.
+  fullscreen: false,
+  pictureInPicture: true
+};
+
+function MyComponent() {
+  return (
+    <IframeWebView
+      allowsPayment
+      allowsFullscreen
+      javaScriptEnabled
+      webPolicies={webPolicies}
+      source={{ uri: "https://domain.com/" }}
+    />
+  );
+}
+----
+
+will be rendered as
+
+[source,html]
+----
+<iframe
+  src="https://domain.com/"
+  allow="accelerometer https://domain.cdn.com; camera 'none'; payment; fullscreen; picture-in-picture"
+  sandbox="allow-same-origin allow-scripts"
+></iframe>
+----
