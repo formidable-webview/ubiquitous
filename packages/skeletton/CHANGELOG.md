@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/skeletton@1.0.1...@formidable-webview/skeletton@1.0.2) (2020-10-27)
+
+
+### Bug Fixes
+
+* **skeletton:** use yarn compatible "prepack" hook instead of "prepare" ([e09139b](https://github.com/formidable-webview/ersatz/commit/e09139bf6b705e52e04711259bd4061e7736b5b1)), closes [#2](https://github.com/formidable-webview/ersatz/issues/2)
+
 ## [1.0.1](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/skeletton@1.0.0...@formidable-webview/skeletton@1.0.1) (2020-10-07)
 
 ### Bug Fixes

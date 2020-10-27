@@ -1,6 +1,6 @@
 {
   "name": "@formidable-webview/skeletton",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generic component to render `WebView`-like elements.",
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
