@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz@2.0.1...@formidable-webview/ersatz@2.0.2) (2020-10-27)
+
+
+### Bug Fixes
+
+* **ersatz:** upgrade jsdom dependency to 16.4.0 ([209aaed](https://github.com/formidable-webview/ersatz/commit/209aaedbbc274f11eb12bcfe81b556d875bc4c20)), closes [#1](https://github.com/formidable-webview/ersatz/issues/1)
+
 ## [2.0.1](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz@2.0.0...@formidable-webview/ersatz@2.0.1) (2020-10-07)
 
 ### Bug Fixes
