@@ -16,7 +16,7 @@
     "build:doc": "embedme README.md",
     "build:source": "bob build",
     "build": "yarn build:doc && yarn build:source",
-    "prepare": "yarn build"
+    "prepack": "yarn build"
   },
   "repository": {
     "type": "git",
