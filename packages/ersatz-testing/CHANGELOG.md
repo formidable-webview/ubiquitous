@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz-testing@2.0.1...@formidable-webview/ersatz-testing@2.0.2) (2020-10-27)
+
+
+### Bug Fixes
+
+* **ersatz-testing:** use yarn compatible "prepack" hook instead of "prepare" ([369a234](https://github.com/formidable-webview/ersatz/commit/369a2346b6bb418d3f37626cde5a1654cc3eb8e0)), closes [#2](https://github.com/formidable-webview/ersatz/issues/2)
+
 ## [2.0.1](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz-testing@2.0.0...@formidable-webview/ersatz-testing@2.0.1) (2020-10-07)
 
 ### Bug Fixes
