@@ -1,6 +1,6 @@
 {
   "name": "@formidable-webview/web",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "description": "🚀 Render WebViews with react-native-web",
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
