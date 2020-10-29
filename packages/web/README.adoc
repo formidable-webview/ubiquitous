@@ -8,10 +8,38 @@ ifdef::env-github[]
 endif::[]
 :toc:
 
-= @formidable-webview/iframe
+= @formidable-webview/web
+
+https://www.npmjs.com/package/@formidable-webview/web[image:https://img.shields.io/npm/v/@formidable-webview/web[npm]]
+https://github.com/formidable-webview/ubiquitous/actions?query=branch%3Amaster+workflow%3Aweb[image:https://github.com/formidable-webview/ubiquitous/workflows/ersatz/badge.svg?branch=master[CI]]
 
 *A security-aware `WebView` component for
 https://github.com/necolas/react-native-web[react-native-web] aimed at feature parity.*
+
+== Setup
+
+=== Install
+
+==== npm
+
+```sh
+npm add @formidable-webview/web
+```
+
+==== yarn
+
+```sh
+yarn add @formidable-webview/web
+```
+
+=== Configure Webpack
+
+You just need to add a new line to map react-native-webview in your webpack
+config script (_webpack.config.js_):
+
+```js
+config.resolve.alias['react-native-webview'] = '@formidable-webview/web';
+```
 
 == Features
 
