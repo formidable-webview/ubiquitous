@@ -60,8 +60,9 @@
     "jest": "^26.5.2",
     "metro-react-native-babel-preset": "^0.63.0",
     "react": "16.13.1",
+    "react-dom": "16.13.1",
     "react-native": "^0.63.3",
-    "react-native-web": "^0.14.0",
+    "react-native-web": "^0.14.5",
     "react-test-renderer": "16.13.1",
     "release-it": "^14.0.3",
     "typescript": "~3.9.7"

@@ -1,6 +1,5 @@
 module.exports = {
-  preset: 'react-native',
+  preset: 'react-native-web',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'node'],
-  testRegex: 'src/.*\\.test\\.tsx?$',
-  coveragePathIgnorePatterns: ['/node_modules/', '__tests__', 'src/events.ts']
+  testRegex: 'src/.*\\.test\\.tsx?$'
 };

@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "build:ersatz": "yarn workspace @formidable-webview/ersatz build",
-    "build:web": "yarn workspace @formidable-webview/web build",
     "build:ersatz-testing": "yarn workspace @formidable-webview/ersatz-testing build",
     "build:skeletton": "yarn workspace @formidable-webview/skeletton build",
+    "build:web": "yarn workspace @formidable-webview/web build",
     "test:ersatz": "yarn workspace @formidable-webview/ersatz test",
     "test:ersatz:ts": "yarn workspace @formidable-webview/ersatz test:ts",
     "test:ersatz:jest": "yarn workspace @formidable-webview/ersatz test:jest",
@@ -17,7 +17,10 @@
     "test:ersatz-testing:ts": "yarn workspace @formidable-webview/ersatz-testing test:ts",
     "test:ersatz-testing:doc": "yarn workspace @formidable-webview/ersatz-testing test:doc",
     "test:ersatz-testing:lint": "yarn workspace @formidable-webview/ersatz-testing test:lint",
-    "test:ersatz-testing:acceptance": "yarn workspace @acceptance/ersatz-testing test"
+    "test:ersatz-testing:acceptance": "yarn workspace @acceptance/ersatz-testing test",
+    "test:web:ts": "yarn workspace @formidable-webview/web test:ts",
+    "test:web:jest": "yarn workspace @formidable-webview/web test:jest",
+    "test:web:lint": "yarn workspace @formidable-webview/web test:lint"
   },
   "repository": {
     "type": "git",

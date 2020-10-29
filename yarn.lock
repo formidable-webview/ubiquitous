@@ -2222,8 +2222,9 @@ __metadata:
     jest: ^26.5.2
     metro-react-native-babel-preset: ^0.63.0
     react: 16.13.1
+    react-dom: 16.13.1
     react-native: ^0.63.3
-    react-native-web: ^0.14.0
+    react-native-web: ^0.14.5
     react-test-renderer: 16.13.1
     release-it: ^14.0.3
     typescript: ~3.9.7
@@ -16329,9 +16330,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-native-web@npm:^0.14.0":
-  version: 0.14.0
-  resolution: "react-native-web@npm:0.14.0"
+"react-native-web@npm:^0.14.5":
+  version: 0.14.5
+  resolution: "react-native-web@npm:0.14.5"
   dependencies:
     array-find-index: ^1.0.2
     create-react-class: ^15.6.2
@@ -16345,7 +16346,7 @@ fsevents@^1.2.7:
   peerDependencies:
     react: ">=16.5.1"
     react-dom: ">=16.5.1"
-  checksum: 7b720eeae15d61a405c003421277b734f775f41777c5b42310ecbe7d6d0ec91ab85fd16222526733b523cc98fa78fc68e8287224832a765693ba1f6bcefffcad
+  checksum: ed089c5d2f0e6b2aef1e1de2e5950e9f91792d63a7a9846079dec162ffd6039de33f8255ed06068408d5babfb71d760b938faad1b563d49dab6ea1ed2e9f0637
   languageName: node
   linkType: hard
 
