@@ -8,9 +8,9 @@
     "lib",
     "src"
   ],
-  "homepage": "https://github.com/formidable-webview/ersatz/tree/master/packages/skeletton#readme",
+  "homepage": "https://github.com/formidable-webview/ubiquitous/tree/master/packages/skeletton#readme",
   "bugs": {
-    "url": "https://github.com/formidable-webview/ersatz/issues"
+    "url": "https://github.com/formidable-webview/ubiquitous/issues"
   },
   "author": "Jules Sam. Randolph <jules.sam.randolph@gmail.com> (https://github.com/jsamr)",
   "license": "MIT",
@@ -24,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/formidable-webview/ersatz.git"
+    "url": "git+ssh://git@github.com/formidable-webview/ubiquitous.git"
   },
   "scripts": {
     "test": "yarn run test:jest && yarn run test:ts && yarn run test:lint",

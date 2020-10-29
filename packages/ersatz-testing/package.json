@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/formidable-webview/ersatz.git"
+    "url": "git+ssh://git@github.com/formidable-webview/ubiquitous.git"
   },
   "keywords": [
     "react-native",
@@ -32,9 +32,9 @@
   "author": "Jules Sam. Randolph <jules.sam.randolph@gmail.com> (https://github.com/jsamr)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/formidable-webview/ersatz/issues"
+    "url": "https://github.com/formidable-webview/ubiquitous/issues"
   },
-  "homepage": "https://github.com/formidable-webview/tree/master/packages/ersatz-testing#readme",
+  "homepage": "https://github.com/formidable-webview/ubiquitous/tree/master/packages/ersatz-testing#readme",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",

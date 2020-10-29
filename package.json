@@ -29,11 +29,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/formidable-webview/ersatz.git"
+    "url": "git+ssh://git@github.com/formidable-webview/ubiquitous.git"
   },
   "author": "Jules Sam. Randolph <jules.sam.randolph@gmail.com> (https://github.com/jsamr)",
   "license": "MIT",
-  "homepage": "https://github.com/formidable-webview/ersatz#readme",
+  "homepage": "https://github.com/formidable-webview/ubiquitous#readme",
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",

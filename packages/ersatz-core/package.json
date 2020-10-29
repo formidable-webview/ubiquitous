@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/formidable-webview/ersatz.git"
+    "url": "git+ssh://git@github.com/formidable-webview/ubiquitous.git"
   },
   "keywords": [
     "@formidable-webview/ersatz"
@@ -22,9 +22,9 @@
   "author": "Jules Sam. Randolph <jules.sam.randolph@gmail.com> (https://github.com/jsamr)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/formidable-webview/ersatz/issues"
+    "url": "https://github.com/formidable-webview/ubiquitous/issues"
   },
-  "homepage": "https://github.com/formidable-webview/ersatz/tree/master/packages/ersatz-core#readme",
+  "homepage": "https://github.com/formidable-webview/ubiquitous/tree/master/packages/ersatz-core#readme",
   "devDependencies": {
     "@release-it/conventional-changelog": "^2.0.0",
     "@tsconfig/react-native": "^1.0.2",
