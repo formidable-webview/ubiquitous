@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz@2.0.3...@formidable-webview/ersatz@2.1.0) (2020-10-29)
+
+
+### Features
+
+* **skeletton:** pass all remaining props to backend ([7909391](https://github.com/formidable-webview/ersatz/commit/7909391c7ebbd91e0821703b340544c245f9a8e4))
+
 ## [2.0.3](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz@2.0.2...@formidable-webview/ersatz@2.0.3) (2020-10-27)
 
 
