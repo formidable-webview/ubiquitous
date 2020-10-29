@@ -1,4 +1,4 @@
-# Ubiquitous Project
+# The Ubiquitous Project
 
 [![semver](https://img.shields.io/badge/semver-2.0.0-e10079.svg)](https://semver.org/spec/v2.0.0.html)
 [![codecov](https://codecov.io/gh/formidable-webview/ubiquitous/branch/master/graph/badge.svg?flags=ersatz)](https://codecov.io/gh/formidable-webview/ubiquitous?flags=ersatz)
