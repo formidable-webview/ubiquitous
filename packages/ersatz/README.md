@@ -1,6 +1,6 @@
 [![npm](https://img.shields.io/npm/v/@formidable-webview/ersatz)](https://www.npmjs.com/package/@formidable-webview/ersatz)
-[![codecov](https://codecov.io/gh/formidable-webview/ersatz/branch/master/graph/badge.svg?flags=ersatz)](https://codecov.io/gh/formidable-webview/ersatz?flags=ersatz)
-[![CI](https://github.com/formidable-webview/ersatz/workflows/ersatz/badge.svg?branch=master)](https://github.com/formidable-webview/ersatz/actions?query=branch%3Amaster+workflow%3ACI)
+[![codecov](https://codecov.io/gh/formidable-webview/ubiquitous/branch/master/graph/badge.svg?flags=ersatz)](https://codecov.io/gh/formidable-webview/ubiquitous?flags=ersatz)
+[![CI](https://github.com/formidable-webview/ubiquitous/workflows/ersatz/badge.svg?branch=master)](https://github.com/formidable-webview/ubiquitous/actions?query=branch%3Amaster+workflow%3ACI)
 
 # @formidable-webview/ersatz
 

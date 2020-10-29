@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/@formidable-webview/ersatz-testing)](https://www.npmjs.com/package/@formidable-webview/ersatz-testing)
-[![CI](https://github.com/formidable-webview/ersatz/workflows/ersatz-testing/badge.svg?branch=master)](https://github.com/formidable-webview/ersatz/actions?query=branch%3Amaster+workflow%3Aersatz-testing)
+[![CI](https://github.com/formidable-webview/ubiquitous/workflows/ersatz-testing/badge.svg?branch=master)](https://github.com/formidable-webview/ubiquitous/actions?query=branch%3Amaster+workflow%3Aersatz-testing)
 
 # @formidable-webview/ersatz-testing
 
