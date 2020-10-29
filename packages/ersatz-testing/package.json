@@ -1,6 +1,6 @@
 {
   "name": "@formidable-webview/ersatz-testing",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "🚀 Test React Native WebViews with @testing-library/react-native, jest and @formidable-webview/ersatz",
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
