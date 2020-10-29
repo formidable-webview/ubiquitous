@@ -20,7 +20,12 @@
     "test:ersatz-testing:acceptance": "yarn workspace @acceptance/ersatz-testing test",
     "test:web:ts": "yarn workspace @formidable-webview/web test:ts",
     "test:web:jest": "yarn workspace @formidable-webview/web test:jest",
-    "test:web:lint": "yarn workspace @formidable-webview/web test:lint"
+    "test:web:lint": "yarn workspace @formidable-webview/web test:lint",
+    "release:ersatz-core": "yarn workspace @formidable-webview/ersatz-core release-it",
+    "release:skeletton": "yarn workspace @formidable-webview/skeletton release-it",
+    "release:ersatz-testing": "yarn workspace @formidable-webview/ersatz-testing release-it",
+    "release:ersatz": "yarn workspace @formidable-webview/ersatz release-it",
+    "release:web": "yarn workspace @formidable-webview/web release-it"
   },
   "repository": {
     "type": "git",
