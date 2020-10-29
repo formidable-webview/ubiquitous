@@ -8,7 +8,7 @@ import { IframeWebViewProps } from './types';
 export const IframWebView = forwardRef<
   DOMBackendHandle,
   WebViewProps & IframeWebViewProps
->(function Web(props, ref) {
+>(function IframWebView(props, ref) {
   return (
     <Skeletton
       ref={ref as Ref<Skeletton>}
