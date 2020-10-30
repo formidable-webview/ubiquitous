@@ -7,7 +7,7 @@
   "files": [
     "lib",
     "src",
-    "README.adoc"
+    "README.md"
   ],
   "homepage": "https://github.com/formidable-webview/ubiquitous/tree/master/packages/web#readme",
   "bugs": {
@@ -30,7 +30,8 @@
     "test:ts": "tsc --noEmit",
     "test:lint": "eslint --ext ts,tsx src/",
     "build": "bob build",
-    "prepack": "yarn run build"
+    "docgen": "asciidoctor -b docbook -a leveloffset=+1 -o - README.adoc | pandoc --atx-headers -t gfm -f docbook - > README.md",
+    "prepack": "yarn build; yarn docgen"
   },
   "dependencies": {
     "@formidable-webview/ersatz-core": "workspace:*",
