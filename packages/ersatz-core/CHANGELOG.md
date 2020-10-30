@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz-core@2.1.0...@formidable-webview/ersatz-core@2.1.1) (2020-10-30)
+
+
+### Bug Fixes
+
+* update github references from ersatz to ubiquitous ([1245ce4](https://github.com/formidable-webview/ubiquitous/commit/1245ce43f04e939a99e130cdb3d18213599bd071)), closes [#3](https://github.com/formidable-webview/ubiquitous/issues/3)
+
 # [2.1.0](https://github.com/formidable-webview/ersatz/compare/@formidable-webview/ersatz-core@2.0.2...@formidable-webview/ersatz-core@2.1.0) (2020-10-29)
 
 
