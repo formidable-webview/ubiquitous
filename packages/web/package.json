@@ -6,7 +6,8 @@
   "types": "lib/typescript/index.d.ts",
   "files": [
     "lib",
-    "src"
+    "src",
+    "README.adoc"
   ],
   "homepage": "https://github.com/formidable-webview/ubiquitous/tree/master/packages/web#readme",
   "bugs": {
