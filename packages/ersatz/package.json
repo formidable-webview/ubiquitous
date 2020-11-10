@@ -27,7 +27,7 @@
     "url": "git+ssh://git@github.com/formidable-webview/ubiquitous.git"
   },
   "scripts": {
-    "test": "yarn run test:jest && yarn run test:ts && yarn run test:lint",
+    "test": "yarn test:jest && yarn test:ts && yarn test:lint",
     "test:jest": "jest src/",
     "test:ts": "tsc --noEmit",
     "test:lint": "eslint --ext ts,tsx src/",
