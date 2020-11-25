@@ -33,7 +33,7 @@ any testing framework running on node, capable of mounting React components.
 
 | @formidable-webview/ersatz | react-native-webview |
 | -------------------------- | -------------------- |
-| 1.0.0                      | ≥ 7.6.0 < 11         |
+| 2.x                        | ≥ 7.6.0 < 12         |
 
 ## Emulated Features
 

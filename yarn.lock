@@ -2149,7 +2149,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-    react-native-webview: ">= 7.6.0 < 11"
+    react-native-webview: ">= 7.6.0 < 12"
   languageName: unknown
   linkType: soft
 
@@ -2193,7 +2193,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-    react-native-webview: ">= 7.6.0 < 11"
+    react-native-webview: ">= 7.6.0 < 12"
   languageName: unknown
   linkType: soft
 
