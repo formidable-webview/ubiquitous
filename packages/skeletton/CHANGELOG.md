@@ -1,3 +1,5 @@
+## [1.1.2](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/skeletton@1.1.1...@formidable-webview/skeletton@1.1.2) (2020-11-25)
+
 ## [1.1.1](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/skeletton@1.1.0...@formidable-webview/skeletton@1.1.1) (2020-10-30)
 
 
