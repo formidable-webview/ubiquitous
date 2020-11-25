@@ -1,3 +1,5 @@
+## [2.1.2](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz@2.1.1...@formidable-webview/ersatz@2.1.2) (2020-11-25)
+
 ## [2.1.1](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz@2.1.0...@formidable-webview/ersatz@2.1.1) (2020-10-30)
 
 
