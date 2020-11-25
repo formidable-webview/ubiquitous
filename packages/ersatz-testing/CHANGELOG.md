@@ -1,3 +1,5 @@
+## [2.0.5](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz-testing@2.0.4...@formidable-webview/ersatz-testing@2.0.5) (2020-11-25)
+
 ## [2.0.4](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz-testing@2.0.3...@formidable-webview/ersatz-testing@2.0.4) (2020-10-30)
 
 
