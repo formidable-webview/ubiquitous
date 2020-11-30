@@ -10,4 +10,4 @@ coverage:
 flags:
   ersatz:
     paths:
-      - packages/ersatz/coverage/cover.xml
+      - packages/ersatz/
