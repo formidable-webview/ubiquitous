@@ -1,3 +1,5 @@
+## [0.0.2](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/web@0.0.1...@formidable-webview/web@0.0.2) (2020-12-05)
+
 ## [0.0.1](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/web@0.0.1-alpha.1...@formidable-webview/web@0.0.1) (2020-10-30)
 
 ## [0.0.1-alpha.1](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/web@0.0.1-alpha.0...@formidable-webview/web@0.0.1-alpha.1) (2020-10-30)
