@@ -25,7 +25,7 @@ The easiest way to use `Ersatz` is in combination with
 and
 [`@testing-library/react-native`](https://www.npmjs.com/package/@testing-library/react-native).
 **[See examples
-here](https://github.com/formidable-webview/ersatz-testing#readme)**. Because
+here](https://github.com/formidable-webview/ubiquitous/tree/master/packages/ersatz-testing#readme)**. Because
 there is no hard dependency on jest, You should be able to use `Ersatz` with
 any testing framework running on node, capable of mounting React components.
 
