@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz@2.1.2...@formidable-webview/ersatz@2.1.3) (2022-01-27)
+
+
+### Bug Fixes
+
+* lock node-fetch to v3.0.0-beta.9 ([05bb253](https://github.com/formidable-webview/ubiquitous/commit/05bb2534337957ca3cef608f76f4285e971274ec)), closes [#6](https://github.com/formidable-webview/ubiquitous/issues/6) [#5](https://github.com/formidable-webview/ubiquitous/issues/5)
+
 ## [2.1.2](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz@2.1.1...@formidable-webview/ersatz@2.1.2) (2020-11-25)
 
 ## [2.1.1](https://github.com/formidable-webview/ubiquitous/compare/@formidable-webview/ersatz@2.1.0...@formidable-webview/ersatz@2.1.1) (2020-10-30)
